@@ -3,18 +3,18 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle: ''
-description: ''
-keywords:
-author: John Doe
-language: en
+title: squar3cの秘密小屋
+subtitle: '爱我所爱'
+description: '爱就在眼前'
+keywords: "网络安全"
+author: squar3c
+language: zh-CN
 timezone: ''
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
 url: https://squar3c.github.com
-permalink: :year/:month/:day/:title/
+permalink: posts/:abbrlink/
 permalink_defaults:
 pretty_urls:
   trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
@@ -40,13 +40,13 @@ external_link:
   exclude: ''
 filename_case: 0
 render_drafts: false
-post_asset_folder: false
+post_asset_folder: true
 relative_link: false
 future: true
 syntax_highlighter: highlight.js
 highlight:
   line_number: true
-  auto_detect: false
+  auto_detect: true
   tab_replace: ''
   wrap: true
   hljs: false
@@ -96,11 +96,50 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: landscape
+theme: next
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: git
-  repo: https://github.com/squar3c/squar3c.github.io.git
+  repo: git@github.com:squar3c/squar3c.github.io.git
   branch: master
+
+
+# hexo-generator-searchdb
+search:
+  path: search.xml
+  field: post
+  format: html
+  limit: 10
+
+
+# symbols_count_time
+symbols_count_time:
+  symbols: true
+  time: true
+  total_symbols: true
+  total_time: true
+  exclude_codeblock: false
+  awl: 2    
+  wpm: 275
+  suffix: "mins."
+
+
+# hexo-blog-encrypt
+encrypt: 
+  abstract: "日常杂记"
+  message: "vivo50解锁"
+  tags:
+  - {name: journal, password: meitiankaixin}
+  theme: xray
+  wrong_pass_message: "密码错误！！还是乖乖vivo50吧"
+  wrong_hash_message: "hash错误！！还是乖乖vivo50吧"
+
+githubEmojis:
+  enable: true
+  className: github-emoji
+  inject: true
+  styles:
+  customEmojis:
+
