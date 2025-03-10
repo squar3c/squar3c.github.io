@@ -938,7 +938,9 @@ else:
 
 就是从`Cookie`中读取`uname`值，产生注入。
 
-#### 3.2.21 Less-21
+### 3.3 Less21-37
+
+#### 3.3.1 Less-21
 
 ```php
 $cookee = base64_decode($cookee);
@@ -953,7 +955,7 @@ $ python sqlmap.py -u http://127.0.0.1:8888/Less-21/ --cookie="uname=*" --tamper
 
 ![image-20250310230842396](sql注入/image-20250310230842396.png)
 
-#### 3.2.22 Less-22
+#### 3.3.2 Less-22
 
 ```php
 $cookee1 = '"'. $cookee. '"';    
@@ -962,7 +964,7 @@ $sql="SELECT * FROM users WHERE username=$cookee1 LIMIT 0,1";
 
 闭合方式改变
 
-#### 3.2.23 Less-23
+#### 3.3.3 Less-23
 
 ```php
 $id=$_GET['id'];
@@ -983,7 +985,7 @@ else:
 
 过滤了注释符，可以使用闭合方式。
 
-#### 3.2.24 Less-24
+#### 3.3.4 Less-24
 
 `login_create.php`
 
@@ -1060,7 +1062,7 @@ mysql> select * from security.users;
 +----+----------+------------+
 ```
 
-#### 3.2.25 Less-25
+#### 3.3.5 Less-25
 
 接下来很多是绕过过滤的，所以只考虑绕过过滤的部分。
 
@@ -1073,11 +1075,11 @@ $id= preg_replace('/AND/i',"", $id);
 
 双写绕过`oorr`，符号替换`or`换成`||`。
 
-#### 3.2.26 Less-25a
+#### 3.3.6 Less-25a
 
 无区别。
 
-#### 3.2.27 Less-26
+#### 3.3.7 Less-26
 
 ```php
 $id= preg_replace('/or/i',"", $id);           
@@ -1109,11 +1111,11 @@ $id= preg_replace('/[\/\\\\]/',"", $id);
 
 `%00`：空字符
 
-#### 3.2.28 Less-26a
+#### 3.3.8 Less-26a
 
 无区别。
 
-#### 3.2.29 Less-27
+#### 3.3.9 Less-27
 
 ```php
 $id= preg_replace('/[\/\*]/',"", $id);
@@ -1131,11 +1133,11 @@ $id= preg_replace('/UNION/s',"", $id);
 
 `select`和`union`使用大小写绕过和嵌套绕过即可。
 
-#### 3.2.30 Less-27a
+#### 3.3.10 Less-27a
 
 无区别。
 
-#### 3.2.31 Less-28
+#### 3.3.11 Less-28
 
 ```php
 $id= preg_replace('/[\/\*]/',"", $id);
@@ -1147,11 +1149,11 @@ $id= preg_replace('/union\s+select/i',"", $id);
 
 不能大小写绕过，嵌套绕过即可。
 
-#### 3.2.32 Less-28a
+#### 3.3.12 Less-28a
 
 无区别。
 
-#### 3.2.33 Less-29
+#### 3.3.13 Less-29
 
 这里主要难点在`login.php`而不是`index.php`中。
 
@@ -1186,15 +1188,15 @@ $sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
 
 这里根据语言特性绕过可以看本文前面部分。
 
-#### 3.2.34 Less-30
+#### 3.3.14 Less-30
 
 没区别。
 
-#### 3.2.35 Less-31
+#### 3.3.15 Less-31
 
 没区别。
 
-#### 3.2.36 Less-32
+#### 3.3.16 Less-32
 
 ```php
 function check_addslashes($string)
@@ -1231,22 +1233,22 @@ $ echo \'|iconv -f utf-8 -t utf-16
 
 ![image-20250311002549978](sql注入/image-20250311002549978.png)
 
-#### 3.2.37 Less-33
+#### 3.3.17 Less-33
 
 没区别。
 
-#### 3.2.38 Less-34
+#### 3.3.18 Less-34
 
 没区别。
 
-#### 3.2.39 Less-35
+#### 3.3.19 Less-35
 
 没区别。
 
-#### 3.2.40 Less-36
+#### 3.3.20 Less-36
 
 没区别
 
-#### 3.2.41 Less-37
+#### 3.3.21 Less-37
 
 没区别。
