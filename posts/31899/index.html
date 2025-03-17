@@ -175,7 +175,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -307,7 +307,7 @@
 <p>接下来将host修改为<code>%</code>即可。</p>
 <figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> host,<span class="keyword">user</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> <span class="keyword">user</span><span class="operator">=</span><span class="string">'root'</span>;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></tbody></table></figure>
 
-<style>.ksjplucgjbsd{zoom:50%;}</style><img src="/posts/31899/image-20250306000604769.png" class="ksjplucgjbsd" alt="image-20250306000604769">
+<style>.hhcecphkswqq{zoom:50%;}</style><img src="/posts/31899/image-20250306000604769.png" class="hhcecphkswqq" alt="image-20250306000604769">
 
 
 <h3 id="1-2-判断是否存在注入"><a href="#1-2-判断是否存在注入" class="headerlink" title="1.2 判断是否存在注入"></a>1.2 判断是否存在注入</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span></span><br><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">2</span></span><br><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">or</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span></span><br><span class="line">id<span class="operator">=</span><span class="string">'1'</span><span class="keyword">or</span><span class="string">'1'</span><span class="operator">=</span><span class="string">'1'</span></span><br><span class="line">id<span class="operator">=</span>"1"<span class="keyword">or</span>"1"<span class="operator">=</span>"1"</span><br></pre></td></tr></tbody></table></figure>
