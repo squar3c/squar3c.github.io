@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo.jpg">
+  <link rel="mask-icon" href="/images/logo.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"squar3c.github.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.22.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="信息收集 信息收集是渗透测试中的第一步，也是最为关键的一步。有大佬说过：渗透测试的本质就是信息收集。因此在这里认真钻研一下信息收集部分，包括收集什么？如何收集？自动化工具的原理？也尽量自己在每个模块开发出自己的工具，最终整合成自己的信息收集工具。  域名（Domain） 域名是由一串用点分隔的字符组成的互联网上某一台计算机或计算机组的名称，用于在数据传输时标识计算机的电子方位。域名是IP地址的代称">
+<meta property="og:type" content="article">
+<meta property="og:title" content="信息收集(TODO)">
+<meta property="og:url" content="https://squar3c.github.com/posts/56033/index.html">
+<meta property="og:site_name" content="squar3cの秘密小屋">
+<meta property="og:description" content="信息收集 信息收集是渗透测试中的第一步，也是最为关键的一步。有大佬说过：渗透测试的本质就是信息收集。因此在这里认真钻研一下信息收集部分，包括收集什么？如何收集？自动化工具的原理？也尽量自己在每个模块开发出自己的工具，最终整合成自己的信息收集工具。  域名（Domain） 域名是由一串用点分隔的字符组成的互联网上某一台计算机或计算机组的名称，用于在数据传输时标识计算机的电子方位。域名是IP地址的代称">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241121133118.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241121133620.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241121133805.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241121134240.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241121143338.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241122163631.png">
+<meta property="article:published_time" content="2025-03-03T15:25:57.000Z">
+<meta property="article:modified_time" content="2025-03-04T14:36:47.269Z">
+<meta property="article:author" content="squar3c">
+<meta property="article:tag" content="网络安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241121133118.png">
+
+
+<link rel="canonical" href="https://squar3c.github.com/posts/56033/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://squar3c.github.com/posts/56033/","path":"posts/56033/","title":"信息收集(TODO)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>信息收集(TODO) | squar3cの秘密小屋</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+      <img class="custom-logo-image" src="/images/logo.jpg" alt="squar3cの秘密小屋">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">squar3cの秘密小屋</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">爱我所爱</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="nav-number">1.</span> <span class="nav-text">信息收集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%9F%E5%90%8D%EF%BC%88Domain%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">域名（Domain）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A4%E6%96%ADCDN"><span class="nav-number">1.1.1.</span> <span class="nav-text">判断CDN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E7%9C%9F%E5%AE%9EIP"><span class="nav-number">1.1.2.</span> <span class="nav-text">查看真实IP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E5%9F%9F%E5%90%8D%E6%94%B6%E9%9B%86"><span class="nav-number">1.1.3.</span> <span class="nav-text">子域名收集</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SubDomainBrute%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">SubDomainBrute源码分析</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="squar3c"
+      src="/images/logo.jpg">
+  <p class="site-author-name" itemprop="name">squar3c</p>
+  <div class="site-description" itemprop="description">爱就在眼前</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://ma3t1n.github.io/" title="https:&#x2F;&#x2F;ma3t1n.github.io&#x2F;" rel="noopener" target="_blank">Ma3t1n</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://squar3c.github.com/posts/56033/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="squar3c">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="squar3cの秘密小屋">
+      <meta itemprop="description" content="爱就在眼前">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="信息收集(TODO) | squar3cの秘密小屋">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          信息收集(TODO)
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2025-03-03 23:25:57" itemprop="dateCreated datePublished" datetime="2025-03-03T23:25:57+08:00">2025-03-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-03-04 22:36:47" itemprop="dateModified" datetime="2025-03-04T22:36:47+08:00">2025-03-04</time>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>15k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>27 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h1><blockquote>
+<p>信息收集是渗透测试中的第一步，也是最为关键的一步。有大佬说过：渗透测试的本质就是信息收集。因此在这里认真钻研一下信息收集部分，包括收集什么？如何收集？自动化工具的原理？也尽量自己在每个模块开发出自己的工具，最终整合成自己的信息收集工具。</p>
+</blockquote>
+<h2 id="域名（Domain）"><a href="#域名（Domain）" class="headerlink" title="域名（Domain）"></a>域名（Domain）</h2><blockquote>
+<p>域名是由一串用点分隔的字符组成的互联网上某一台计算机或计算机组的名称，用于在数据传输时标识计算机的电子方位。域名是IP地址的代称，目的是便于记忆。一般渗透都会从一个域名开始，因此由域名开始作为切入口。</p>
+</blockquote>
+<h3 id="判断CDN"><a href="#判断CDN" class="headerlink" title="判断CDN"></a>判断CDN</h3><p>内容分发网络（Content Delivery Network）的基本思路是尽可能避开互联网上有可能影响数据传输速度和稳定性的瓶颈和环节，使内容传输更快更稳定。那这对我们渗透测试带来了什么影响呢？</p>
+<p>CDN会代理客户端的请求，将真实服务器的IP地址隐藏，让我们无法直接定位目标服务器，因此需要绕过CDN。</p>
+<p><strong>ping域名判断是否有CDN</strong></p>
+<p>当ping出来的域名为很长一串字符，或者有着很明显的cdn、ali、tencent等字段时大概率存在CDN。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241121133118.png" alt="img"></p>
+<p><strong>nslookup判断CDN</strong></p>
+<p>nslookup是一个命令行工具，用于查询Internet域名信息或诊断DNS服务器问题。</p>
+<p>通过nslookup检测一个域名是否对应多个IP可以判断是否使用CDN</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241121133620.png" alt="img"></p>
+<p><strong>多地ping判断CDN</strong></p>
+<p><a target="_blank" rel="noopener" href="https://ping.chinaz.com/">站长工具</a>还是比较直观的</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241121133805.png" alt="img"></p>
+<h3 id="查看真实IP"><a href="#查看真实IP" class="headerlink" title="查看真实IP"></a>查看真实IP</h3><p>检测完CDN，就该绕过CDN检测了，获取真实IP</p>
+<p><strong>多地ping</strong></p>
+<p>不仅是检测CDN，同时也可以用来判断。</p>
+<p>如<code>www.youzan.com</code>，可以发现存在CDN，但是发现在除中国大陆外都是同一个IP，因此可以判断为真实IP</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241121134240.png" alt="img"></p>
+<p><strong>子域名查询真实IP</strong></p>
+<p>CDN并非免费的，成本较大，因此很多公司可能只对主站或者访问量较大的站做了CDN加速。因此可以通过获取子域名来查询真实IP，查询方式可以利用上述多地ping方法。子域名收集在后面单独讲。</p>
+<p><strong>DNS历史记录</strong></p>
+<p>查看IP与域名绑定的历史记录，可能存在使用CDN前的解析记录，<a target="_blank" rel="noopener" href="https://viewdns.info/">Viewdns</a>或者之前的开发工具都可以查询</p>
+<p><strong>SSL证书</strong></p>
+<p>加入web服务器支持SSL并具有证书，在端口443直接访问时，SSL证书就会被暴露。此时攻击者会看见一个使用特定证书的IPv4主机列表，真实IP就在其中。</p>
+<p><strong>漏洞查找</strong></p>
+<ul>
+<li>敏感文件泄露，如phpinfo等，github信息泄露等。</li>
+<li>XSS、命令执行、SSRF等。</li>
+<li>社工等手段，拿到目标管理员在CDN账号，可以在CDN配置找到。</li>
+</ul>
+<p><strong>网站邮件</strong></p>
+<p>很多网站都自带<code>sendmail</code>，会发邮件给我们，此时查看邮件源码里面就会包含服务器的真实IP</p>
+<p><strong>F5 LTM解码</strong></p>
+<p>当服务器使用FT5 LTM做负载均衡的时候，对set-cookie关键字解码也可以获取真实IP</p>
+<figure class="highlight dns"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Set-Cookie: BIGipServerpool_<span class="number">8.29_8030</span>=<span class="number">487098378</span>.<span class="number">24095.0000</span></span><br><span class="line">先把第一小节的十进制数取出来：<span class="number">487098378</span></span><br><span class="line">再转化为十六进制数：<span class="number">1d</span>08880a</span><br><span class="line">从后至前取四位数：<span class="number">0</span>a.<span class="number">88</span>.<span class="number">08</span>.<span class="number">1d</span></span><br><span class="line">转化为十进制即为IP：<span class="number">10.136.8.29</span></span><br></pre></td></tr></tbody></table></figure>
+
+<h3 id="子域名收集"><a href="#子域名收集" class="headerlink" title="子域名收集"></a>子域名收集</h3><p>在前面查看真实IP的地方提到了子域名收集，子域名收集不只是为了找真实IP服务，更是为了扩大资产收集范围。</p>
+<p><strong>搜索引擎收集</strong></p>
+<p>使用谷歌语法等可以收集大量信息，如<code>site:domain</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241121143338.png" alt="img"></p>
+<p>尝试自己写了个基于Chrome搜索的脚本，爬取效果还是不错的，后面看看能不能增加功能</p>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> signal</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> selenium <span class="keyword">import</span> webdriver</span><br><span class="line"><span class="keyword">from</span> selenium.webdriver.common.by <span class="keyword">import</span> By</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># write to file</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">write_file</span>(<span class="params">file_path, content</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(file_path, <span class="string">'a'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> file:</span><br><span class="line">            file.write(content + <span class="string">'\n'</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(e)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># signal handler</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">signal_handler</span>(<span class="params">sig, frame</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"\nuser pause"</span>)</span><br><span class="line">    sys.exit(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># init selenium</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">setup_driver</span>():</span><br><span class="line">    options = webdriver.ChromeOptions()</span><br><span class="line">    options.add_argument(<span class="string">"--headless"</span>)</span><br><span class="line">    <span class="keyword">return</span> webdriver.Chrome(options=options)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># get domain in links</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">extract_domain</span>(<span class="params">link</span>):</span><br><span class="line">    <span class="keyword">match</span> = re.search(<span class="string">r"https://(.*?)/"</span>, link)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">match</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">match</span>.group(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># fetch links from result</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">fetch_links</span>(<span class="params">driver, domain, page</span>):</span><br><span class="line">    url = <span class="string">f"https://www.google.com/search?q=site:<span class="subst">{domain}</span>&amp;start=<span class="subst">{page}</span>0"</span></span><br><span class="line">    driver.get(url)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        elements = driver.find_elements(By.CSS_SELECTOR, <span class="string">"#rso .kb0PBd.A9Y9g.jGGQ5e span &gt; a"</span>)</span><br><span class="line">        links = []</span><br><span class="line">        <span class="keyword">for</span> element <span class="keyword">in</span> elements:</span><br><span class="line">            link = element.get_attribute(<span class="string">"href"</span>)</span><br><span class="line">            <span class="keyword">if</span> link:</span><br><span class="line">                links.append(link)</span><br><span class="line">        <span class="keyword">return</span> links</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f"failed to fetch links: <span class="subst">{e}</span>"</span>)</span><br><span class="line">        <span class="keyword">return</span> []</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># main</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="comment"># signal init</span></span><br><span class="line">    signal.signal(signal.SIGINT, signal_handler)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># parse user input</span></span><br><span class="line">    parser = argparse.ArgumentParser(description=<span class="string">"Chrome search script"</span>)</span><br><span class="line">    parser.add_argument(<span class="string">"-d"</span>, <span class="string">"--domain"</span>, required=<span class="literal">True</span>, <span class="built_in">help</span>=<span class="string">"The domain to search"</span>)</span><br><span class="line">    parser.add_argument(<span class="string">"-m"</span>, <span class="string">"--maxpage"</span>, <span class="built_in">type</span>=<span class="built_in">int</span>, required=<span class="literal">True</span>, <span class="built_in">help</span>=<span class="string">"The maximum number to search"</span>)</span><br><span class="line">    args = parser.parse_args()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># parameter assignment</span></span><br><span class="line">    domain = args.domain</span><br><span class="line">    max_page = args.maxpage</span><br><span class="line"></span><br><span class="line">    <span class="comment"># init driver</span></span><br><span class="line">    driver = setup_driver()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># remove duplicates</span></span><br><span class="line">    unique_links = <span class="built_in">set</span>()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Start crawling from the first page</span></span><br><span class="line">    <span class="keyword">for</span> page <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, max_page + <span class="number">1</span>):</span><br><span class="line">        links = fetch_links(driver, domain, page)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Traverse links, extract and save unique domain names</span></span><br><span class="line">        <span class="keyword">for</span> link <span class="keyword">in</span> links:</span><br><span class="line">            domain_name = extract_domain(link)</span><br><span class="line">            <span class="keyword">if</span> domain_name <span class="keyword">and</span> domain_name <span class="keyword">not</span> <span class="keyword">in</span> unique_links:</span><br><span class="line">                unique_links.add(domain_name)</span><br><span class="line">                <span class="built_in">print</span>(domain_name)</span><br><span class="line">                write_file(<span class="string">"domain.txt"</span>, domain_name)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># close driver</span></span><br><span class="line">    driver.quit()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></tbody></table></figure>
+
+<p><strong>资产测绘工具搜集</strong></p>
+<p>使用资产测绘工具收集，如<strong>fofa、hunter、360quake、微步</strong>等，包括使用站长之家等等。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/Squarehhh/DrawingBed/myblog/20241122163631.png" alt="img"></p>
+<p><strong>使用自动化工具</strong></p>
+<p>这里对两种开源的工具进行源码分析，了解其原理</p>
+<h4 id="SubDomainBrute源码分析"><a href="#SubDomainBrute源码分析" class="headerlink" title="SubDomainBrute源码分析"></a><strong>SubDomainBrute源码分析</strong></h4><p>这里只分析主要代码</p>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 加载DNS服务器地址</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">load_dns_servers</span>():</span><br><span class="line">    print_msg(<span class="string">'[+] Validate DNS servers'</span>, line_feed=<span class="literal">True</span>)</span><br><span class="line">    dns_servers = []</span><br><span class="line"></span><br><span class="line">    servers_to_test = []</span><br><span class="line">    <span class="comment"># 从字典中加载未被注释的DNS服务器地址</span></span><br><span class="line">    <span class="keyword">for</span> server <span class="keyword">in</span> <span class="built_in">open</span>(os.path.join(root_path, <span class="string">'dict/dns_servers.txt'</span>)).readlines():</span><br><span class="line">        server = server.strip()</span><br><span class="line">        <span class="keyword">if</span> server <span class="keyword">and</span> <span class="keyword">not</span> server.startswith(<span class="string">'#'</span>):</span><br><span class="line">            servers_to_test.append(server)</span><br><span class="line"></span><br><span class="line">	<span class="comment"># 异步验证DNS服务器，dns_servers为传入的空列表，保存验证通过的DNS服务器地址</span></span><br><span class="line">    loop = asyncio.get_event_loop()</span><br><span class="line">    loop.run_until_complete(async_load_dns_servers(servers_to_test, dns_servers))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 打印有效DNS服务器地址</span></span><br><span class="line">    server_count = <span class="built_in">len</span>(dns_servers)</span><br><span class="line">    print_msg(<span class="string">'\n[+] %s DNS Servers found'</span> % server_count, line_feed=<span class="literal">True</span>)</span><br><span class="line">    <span class="keyword">if</span> server_count == <span class="number">0</span>:</span><br><span class="line">        print_msg(<span class="string">'[ERROR] No valid DNS Server !'</span>, line_feed=<span class="literal">True</span>)</span><br><span class="line">        sys.exit(-<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> dns_servers</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载子域名爆破字典</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">load_next_sub</span>(<span class="params">full_scan</span>):</span><br><span class="line">    next_subs = []</span><br><span class="line">    <span class="comment"># 根据full_scan参数判断加载哪个字典</span></span><br><span class="line">    _file = <span class="string">'dict/next_sub_full.txt'</span> <span class="keyword">if</span> full_scan <span class="keyword">else</span> <span class="string">'dict/next_sub.txt'</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 将子域名去重后存入临时集合tmp_set</span></span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(os.path.join(root_path, _file)) <span class="keyword">as</span> f:</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">            sub = line.strip()</span><br><span class="line">            <span class="keyword">if</span> sub <span class="keyword">and</span> sub <span class="keyword">not</span> <span class="keyword">in</span> next_subs:</span><br><span class="line">                tmp_set = {sub}</span><br><span class="line">                </span><br><span class="line">                <span class="comment"># 如果子域名模块包含占位符，如{alphnum}，则进行替换操作</span></span><br><span class="line">                <span class="keyword">while</span> tmp_set:</span><br><span class="line">                    item = tmp_set.pop()</span><br><span class="line">                    <span class="keyword">if</span> item.find(<span class="string">'{alphnum}'</span>) &gt;= <span class="number">0</span>:</span><br><span class="line">                        <span class="keyword">for</span> _letter <span class="keyword">in</span> <span class="string">'abcdefghijklmnopqrstuvwxyz0123456789'</span>:</span><br><span class="line">                            tmp_set.add(item.replace(<span class="string">'{alphnum}'</span>, _letter, <span class="number">1</span>))</span><br><span class="line">                    <span class="keyword">elif</span> item.find(<span class="string">'{alpha}'</span>) &gt;= <span class="number">0</span>:</span><br><span class="line">                        <span class="keyword">for</span> _letter <span class="keyword">in</span> <span class="string">'abcdefghijklmnopqrstuvwxyz'</span>:</span><br><span class="line">                            tmp_set.add(item.replace(<span class="string">'{alpha}'</span>, _letter, <span class="number">1</span>))</span><br><span class="line">                    <span class="keyword">elif</span> item.find(<span class="string">'{num}'</span>) &gt;= <span class="number">0</span>:</span><br><span class="line">                        <span class="keyword">for</span> _letter <span class="keyword">in</span> <span class="string">'0123456789'</span>:</span><br><span class="line">                            tmp_set.add(item.replace(<span class="string">'{num}'</span>, _letter, <span class="number">1</span>))</span><br><span class="line">                    <span class="keyword">elif</span> item <span class="keyword">not</span> <span class="keyword">in</span> next_subs:</span><br><span class="line">                        next_subs.append(item)</span><br><span class="line">    <span class="keyword">return</span> next_subs</span><br></pre></td></tr></tbody></table></figure>
+
+<p>加载字典的功能中，使用占位符的方式让这个工具更加灵活，字典文件更加通用，并且通过这个方式可以轻松生成大规模的子域名。</p>
+<p>在子域名中还存在一个<strong>泛解析</strong>的问题，这个工具里面解决了这个问题</p>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">async_wildcard_test</span>(<span class="params">domain, dns_servers, level=<span class="number">1</span></span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 创建异步DNS解析器</span></span><br><span class="line">        r = dns.asyncresolver.Resolver()</span><br><span class="line">        <span class="comment"># 使用DNS服务器解析域名</span></span><br><span class="line">        r.nameservers = dns_servers</span><br><span class="line">        <span class="comment"># 使用异步DNS查询解析A记录，lijiejie-not-existed-test是一个随机的子域名，理论上不存在</span></span><br><span class="line">        answers = <span class="keyword">await</span> r.resolve(<span class="string">'lijiejie-not-existed-test.%s'</span> % domain, <span class="string">'A'</span>, lifetime=<span class="number">10</span>)</span><br><span class="line">        <span class="comment"># 如果解析成功，讲这些IP手机在ips中，如果解析的IP有效，可能意味着域名启用了通配符解析</span></span><br><span class="line">        ips = <span class="string">', '</span>.join(<span class="built_in">sorted</span>([answer.address <span class="keyword">for</span> answer <span class="keyword">in</span> answers]))</span><br><span class="line">        <span class="comment"># 初步检测，生成一个子域名，并递归调用进一步检测，并将level设置为2</span></span><br><span class="line">        <span class="keyword">if</span> level == <span class="number">1</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">'any-sub.%s\t%s'</span> % (domain.ljust(<span class="number">30</span>), ips))</span><br><span class="line">            <span class="keyword">await</span> async_wildcard_test(<span class="string">'any-sub.%s'</span> % domain, dns_servers, <span class="number">2</span>)</span><br><span class="line">        <span class="comment"># 打印提示信息，使用-w参数强制扫描通配符域名</span></span><br><span class="line">        <span class="keyword">elif</span> level == <span class="number">2</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">'\nUse -w to enable force scan wildcard domain'</span>)</span><br><span class="line">            sys.exit(<span class="number">0</span>)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">return</span> domain</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">wildcard_test</span>(<span class="params">domain, dns_servers</span>):</span><br><span class="line">    <span class="comment"># 获取当前的异步事件循环</span></span><br><span class="line">    loop = asyncio.get_event_loop()</span><br><span class="line">    <span class="comment"># 等待异步任务完成</span></span><br><span class="line">    <span class="keyword">return</span> loop.run_until_complete(</span><br><span class="line">        <span class="comment"># 并行执行多个异步任务，并返回它们的结果</span></span><br><span class="line">        asyncio.gather(</span><br><span class="line">            async_wildcard_test(domain, dns_servers, level=<span class="number">1</span>)</span><br><span class="line">        )</span><br><span class="line">    )[<span class="number">0</span>]</span><br></pre></td></tr></tbody></table></figure>
+
+<p>通过给出一个不存在的域名检测，判断是否开启了泛解析</p>
+<p>接下来看看扫描模块</p>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 爆破模块</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SubNameBrute</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="comment"># 初始化</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, *params</span>):</span><br><span class="line">        <span class="comment"># 提取传入参数</span></span><br><span class="line">        <span class="variable language_">self</span>.domain, <span class="variable language_">self</span>.options, <span class="variable language_">self</span>.process_num, <span class="variable language_">self</span>.dns_servers, <span class="variable language_">self</span>.next_subs, \</span><br><span class="line">            <span class="variable language_">self</span>.scan_count, <span class="variable language_">self</span>.found_count, <span class="variable language_">self</span>.queue_size_array, tmp_dir = params</span><br><span class="line">        <span class="variable language_">self</span>.dns_count = <span class="built_in">len</span>(<span class="variable language_">self</span>.dns_servers)</span><br><span class="line">        <span class="variable language_">self</span>.scan_count_local = <span class="number">0</span></span><br><span class="line">        <span class="variable language_">self</span>.found_count_local = <span class="number">0</span></span><br><span class="line">        <span class="comment"># 初始化DNS解析器</span></span><br><span class="line">        <span class="variable language_">self</span>.resolvers = [dns.asyncresolver.Resolver(configure=<span class="literal">False</span>) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="variable language_">self</span>.options.threads)]</span><br><span class="line">        <span class="keyword">for</span> r <span class="keyword">in</span> <span class="variable language_">self</span>.resolvers:</span><br><span class="line">            <span class="comment"># 解析事件</span></span><br><span class="line">            r.lifetime = <span class="number">6.0</span></span><br><span class="line">            <span class="comment"># 超时时间</span></span><br><span class="line">            r.timeout = <span class="number">10.0</span></span><br><span class="line">        <span class="comment"># 优先队列和状态变量</span></span><br><span class="line">        <span class="variable language_">self</span>.queue = PriorityQueue()</span><br><span class="line">        <span class="variable language_">self</span>.ip_dict = {}</span><br><span class="line">        <span class="variable language_">self</span>.found_subs = <span class="built_in">set</span>()</span><br><span class="line">        <span class="variable language_">self</span>.cert_subs = <span class="built_in">set</span>()</span><br><span class="line">        <span class="variable language_">self</span>.timeout_subs = {}</span><br><span class="line">        <span class="variable language_">self</span>.no_server_subs = {}</span><br><span class="line">        <span class="variable language_">self</span>.count_time = time.time()</span><br><span class="line">        <span class="comment"># 输出日志到文件</span></span><br><span class="line">        <span class="variable language_">self</span>.outfile = <span class="built_in">open</span>(<span class="string">'%s/%s_part_%s.txt'</span> % (tmp_dir, <span class="variable language_">self</span>.domain, <span class="variable language_">self</span>.process_num), <span class="string">'w'</span>)</span><br><span class="line">        <span class="variable language_">self</span>.normal_names_set = <span class="built_in">set</span>()</span><br><span class="line">        <span class="variable language_">self</span>.lock = asyncio.Lock()</span><br><span class="line">        <span class="comment"># 线程状态</span></span><br><span class="line">        <span class="variable language_">self</span>.threads_status = [<span class="string">'1'</span>] * <span class="variable language_">self</span>.options.threads</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 加载子域名字典</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">load_sub_names</span>(<span class="params">self</span>):</span><br><span class="line">        normal_lines = []</span><br><span class="line">        wildcard_lines = []</span><br><span class="line">        wildcard_set = <span class="built_in">set</span>()</span><br><span class="line">        regex_list = []</span><br><span class="line">        lines = <span class="built_in">set</span>()</span><br><span class="line">        <span class="comment"># 打开文件逐行读取子域名，跳过空行或重复子域名</span></span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(<span class="variable language_">self</span>.options.file) <span class="keyword">as</span> inFile:</span><br><span class="line">            <span class="keyword">for</span> line <span class="keyword">in</span> inFile.readlines():</span><br><span class="line">                sub = line.strip()</span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> sub <span class="keyword">or</span> sub <span class="keyword">in</span> lines:</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line">                lines.add(sub)</span><br><span class="line"></span><br><span class="line">                <span class="comment"># 判断子域名是否含占位符</span></span><br><span class="line">                brace_count = sub.count(<span class="string">'{'</span>)</span><br><span class="line">                <span class="keyword">if</span> brace_count &gt; <span class="number">0</span>:</span><br><span class="line">                    wildcard_lines.append((brace_count, sub))</span><br><span class="line">					<span class="comment"># 占位符处理</span></span><br><span class="line">                    sub = sub.replace(<span class="string">'{alphnum}'</span>, <span class="string">'[a-z0-9]'</span>)</span><br><span class="line">                    sub = sub.replace(<span class="string">'{alpha}'</span>, <span class="string">'[a-z]'</span>)</span><br><span class="line">                    sub = sub.replace(<span class="string">'{num}'</span>, <span class="string">'[0-9]'</span>)</span><br><span class="line">                    <span class="comment"># 去重</span></span><br><span class="line">                    <span class="keyword">if</span> sub <span class="keyword">not</span> <span class="keyword">in</span> wildcard_set:</span><br><span class="line">                        wildcard_set.add(sub)</span><br><span class="line">                        regex_list.append(<span class="string">'^'</span> + sub + <span class="string">'$'</span>)</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="comment"># 普通子域名直接加入列表</span></span><br><span class="line">                    normal_lines.append(sub)</span><br><span class="line">                    <span class="variable language_">self</span>.normal_names_set.add(sub)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> regex_list:</span><br><span class="line">            pattern = <span class="string">'|'</span>.join(regex_list)</span><br><span class="line">            _regex = re.<span class="built_in">compile</span>(pattern)</span><br><span class="line">            <span class="keyword">for</span> line <span class="keyword">in</span> normal_lines:</span><br><span class="line">                <span class="keyword">if</span> _regex.search(line):</span><br><span class="line">                    normal_lines.remove(line)</span><br><span class="line">		</span><br><span class="line">        <span class="comment"># 普通子域名加入队列，优先级为0</span></span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> normal_lines[<span class="variable language_">self</span>.process_num::<span class="variable language_">self</span>.options.process]:</span><br><span class="line">            <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put((<span class="number">0</span>, _))    <span class="comment"># priority set to 0</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 含占位符的子域名直接加入队列</span></span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> wildcard_lines[<span class="variable language_">self</span>.process_num::<span class="variable language_">self</span>.options.process]:</span><br><span class="line">            <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put(_)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 检测进程状态</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">update_counter</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            <span class="keyword">if</span> <span class="string">'1'</span> <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.threads_status:</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            <span class="variable language_">self</span>.scan_count.value += <span class="variable language_">self</span>.scan_count_local</span><br><span class="line">            <span class="variable language_">self</span>.scan_count_local = <span class="number">0</span></span><br><span class="line">            <span class="variable language_">self</span>.queue_size_array[<span class="variable language_">self</span>.process_num] = <span class="variable language_">self</span>.queue.qsize()</span><br><span class="line">            <span class="keyword">if</span> <span class="variable language_">self</span>.found_count_local:</span><br><span class="line">                <span class="variable language_">self</span>.found_count.value += <span class="variable language_">self</span>.found_count_local</span><br><span class="line">                <span class="variable language_">self</span>.found_count_local = <span class="number">0</span></span><br><span class="line">            <span class="variable language_">self</span>.count_time = time.time()</span><br><span class="line">            <span class="keyword">await</span> asyncio.sleep(<span class="number">0.5</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 检测目标域名的SSL/TLS证书的扩展信息，提取符合条件的子域名</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">check_https_alt_names</span>(<span class="params">self, domain</span>):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 建立异步HTTPS连接</span></span><br><span class="line">            reader, _ = <span class="keyword">await</span> asyncio.open_connection(</span><br><span class="line">                host=domain,</span><br><span class="line">                port=<span class="number">443</span>,</span><br><span class="line">                ssl=<span class="literal">True</span>,</span><br><span class="line">                server_hostname=domain,</span><br><span class="line">            )</span><br><span class="line">            <span class="comment"># 获取证书详细信息</span></span><br><span class="line">            <span class="keyword">for</span> item <span class="keyword">in</span> reader._transport.get_extra_info(<span class="string">'peercert'</span>)[<span class="string">'subjectAltName'</span>]:</span><br><span class="line">                <span class="keyword">if</span> item[<span class="number">0</span>].upper() == <span class="string">'DNS'</span>:</span><br><span class="line">                    name = item[<span class="number">1</span>].lower()</span><br><span class="line">                    <span class="comment"># 筛选符合条件的子域名</span></span><br><span class="line">                    <span class="keyword">if</span> name.endswith(<span class="variable language_">self</span>.domain):</span><br><span class="line">                        sub = name[:<span class="built_in">len</span>(name) - <span class="built_in">len</span>(<span class="variable language_">self</span>.domain) - <span class="number">1</span>]    <span class="comment"># new sub</span></span><br><span class="line">                        sub = sub.replace(<span class="string">'*'</span>, <span class="string">''</span>)</span><br><span class="line">                        sub = sub.strip(<span class="string">'.'</span>)</span><br><span class="line">                        <span class="comment"># 去重并添加到任务队列</span></span><br><span class="line">                        <span class="keyword">if</span> sub <span class="keyword">and</span> sub <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.found_subs <span class="keyword">and</span> \</span><br><span class="line">                                sub <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.normal_names_set <span class="keyword">and</span> sub <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.cert_subs:</span><br><span class="line">                            <span class="variable language_">self</span>.cert_subs.add(sub)</span><br><span class="line">                            <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put((<span class="number">0</span>, sub))</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 查询DNS解析结果，并限制查询的超时时间</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">do_query</span>(<span class="params">self, j, cur_domain</span>):</span><br><span class="line">        <span class="keyword">async</span> <span class="keyword">with</span> timeout(<span class="number">10.2</span>):</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">await</span> <span class="variable language_">self</span>.resolvers[j].resolve(cur_domain, <span class="string">'A'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 扫描</span></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">scan</span>(<span class="params">self, j</span>):</span><br><span class="line">        <span class="comment"># 设置DNS解析器</span></span><br><span class="line">        <span class="variable language_">self</span>.resolvers[j].nameservers = [<span class="variable language_">self</span>.dns_servers[j % <span class="variable language_">self</span>.dns_count]]</span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.dns_count &gt; <span class="number">1</span>:</span><br><span class="line">            <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">                s = random.choice(<span class="variable language_">self</span>.dns_servers)</span><br><span class="line">                <span class="keyword">if</span> s != <span class="variable language_">self</span>.dns_servers[j % <span class="variable language_">self</span>.dns_count]:</span><br><span class="line">                    <span class="variable language_">self</span>.resolvers[j].nameservers.append(s)</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">        empty_counter = <span class="number">0</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 处理子域</span></span><br><span class="line">        <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                brace_count, sub = <span class="variable language_">self</span>.queue.get_nowait()</span><br><span class="line">                <span class="variable language_">self</span>.threads_status[j] = <span class="string">'1'</span></span><br><span class="line">                empty_counter = <span class="number">0</span></span><br><span class="line">            <span class="keyword">except</span> asyncio.queues.QueueEmpty <span class="keyword">as</span> e:</span><br><span class="line">                empty_counter += <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> empty_counter &gt; <span class="number">10</span>:</span><br><span class="line">                    <span class="variable language_">self</span>.threads_status[j] = <span class="string">'0'</span></span><br><span class="line">                <span class="keyword">if</span> <span class="string">'1'</span> <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.threads_status:</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    <span class="keyword">await</span> asyncio.sleep(<span class="number">0.1</span>)</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">            <span class="comment"># 对于带有通配符的子域进行处理</span></span><br><span class="line">            <span class="keyword">if</span> brace_count &gt; <span class="number">0</span>:</span><br><span class="line">                brace_count -= <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> sub.find(<span class="string">'{next_sub}'</span>) &gt;= <span class="number">0</span>:</span><br><span class="line">                    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="variable language_">self</span>.next_subs:</span><br><span class="line">                        <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put((<span class="number">0</span>, sub.replace(<span class="string">'{next_sub}'</span>, _)))</span><br><span class="line">                <span class="keyword">if</span> sub.find(<span class="string">'{alphnum}'</span>) &gt;= <span class="number">0</span>:</span><br><span class="line">                    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="string">'abcdefghijklmnopqrstuvwxyz0123456789'</span>:</span><br><span class="line">                        <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put((brace_count, sub.replace(<span class="string">'{alphnum}'</span>, _, <span class="number">1</span>)))</span><br><span class="line">                <span class="keyword">elif</span> sub.find(<span class="string">'{alpha}'</span>) &gt;= <span class="number">0</span>:</span><br><span class="line">                    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="string">'abcdefghijklmnopqrstuvwxyz'</span>:</span><br><span class="line">                        <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put((brace_count, sub.replace(<span class="string">'{alpha}'</span>, _, <span class="number">1</span>)))</span><br><span class="line">                <span class="keyword">elif</span> sub.find(<span class="string">'{num}'</span>) &gt;= <span class="number">0</span>:</span><br><span class="line">                    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="string">'0123456789'</span>:</span><br><span class="line">                        <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put((brace_count, sub.replace(<span class="string">'{num}'</span>, _, <span class="number">1</span>)))</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                <span class="keyword">if</span> sub <span class="keyword">in</span> <span class="variable language_">self</span>.found_subs:</span><br><span class="line">                    <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">                <span class="variable language_">self</span>.scan_count_local += <span class="number">1</span></span><br><span class="line">                cur_domain = sub + <span class="string">'.'</span> + <span class="variable language_">self</span>.domain</span><br><span class="line"></span><br><span class="line">                <span class="comment"># 执行DNS查询</span></span><br><span class="line">                answers = <span class="keyword">await</span> <span class="variable language_">self</span>.do_query(j, cur_domain)</span><br><span class="line">                </span><br><span class="line">                <span class="comment"># 处理DNS查询结果，排除无效IP</span></span><br><span class="line">                <span class="keyword">if</span> answers:</span><br><span class="line">                    <span class="variable language_">self</span>.found_subs.add(sub)</span><br><span class="line">                    ips = <span class="string">', '</span>.join(<span class="built_in">sorted</span>([answer.address <span class="keyword">for</span> answer <span class="keyword">in</span> answers]))</span><br><span class="line">                    invalid_ip_found = <span class="literal">False</span></span><br><span class="line">                    <span class="keyword">for</span> answer <span class="keyword">in</span> answers:</span><br><span class="line">                        <span class="keyword">if</span> answer.address <span class="keyword">in</span> [<span class="string">'1.1.1.1'</span>, <span class="string">'127.0.0.1'</span>, <span class="string">'0.0.0.0'</span>, <span class="string">'0.0.0.1'</span>]:</span><br><span class="line">                            invalid_ip_found = <span class="literal">True</span></span><br><span class="line">                    <span class="keyword">if</span> invalid_ip_found:</span><br><span class="line">                        <span class="keyword">continue</span></span><br><span class="line">                    <span class="keyword">if</span> <span class="variable language_">self</span>.options.i <span class="keyword">and</span> is_intranet(answers[<span class="number">0</span>].host):</span><br><span class="line">                        <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">                    <span class="keyword">try</span>:</span><br><span class="line">                        <span class="comment"># 查询CNAME记录</span></span><br><span class="line">                        cname = <span class="built_in">str</span>(answers.canonical_name)[:-<span class="number">1</span>]</span><br><span class="line">                        <span class="keyword">if</span> cname != cur_domain <span class="keyword">and</span> cname.endswith(<span class="variable language_">self</span>.domain):</span><br><span class="line">                            cname_sub = cname[:<span class="built_in">len</span>(cname) - <span class="built_in">len</span>(<span class="variable language_">self</span>.domain) - <span class="number">1</span>]    <span class="comment"># new sub</span></span><br><span class="line">                            <span class="keyword">if</span> cname_sub <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.found_subs <span class="keyword">and</span> cname_sub <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.normal_names_set:</span><br><span class="line">                                <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put((<span class="number">0</span>, cname_sub))</span><br><span class="line">                    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">                    first_level_sub = sub.split(<span class="string">'.'</span>)[-<span class="number">1</span>]</span><br><span class="line">                    max_found = <span class="number">20</span></span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> <span class="variable language_">self</span>.options.w:</span><br><span class="line">                        first_level_sub = <span class="string">''</span></span><br><span class="line">                        max_found = <span class="number">3</span></span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (first_level_sub, ips) <span class="keyword">not</span> <span class="keyword">in</span> <span class="variable language_">self</span>.ip_dict:</span><br><span class="line">                        <span class="variable language_">self</span>.ip_dict[(first_level_sub, ips)] = <span class="number">1</span></span><br><span class="line">                    <span class="keyword">else</span>:</span><br><span class="line">                        <span class="variable language_">self</span>.ip_dict[(first_level_sub, ips)] += <span class="number">1</span></span><br><span class="line">                        <span class="keyword">if</span> <span class="variable language_">self</span>.ip_dict[(first_level_sub, ips)] &gt; max_found:</span><br><span class="line">                            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">                    <span class="variable language_">self</span>.found_count_local += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment"># 将查询结果写入文件</span></span><br><span class="line">                    <span class="variable language_">self</span>.outfile.write(cur_domain.ljust(<span class="number">30</span>) + <span class="string">'\t'</span> + ips + <span class="string">'\n'</span>)</span><br><span class="line">                    <span class="variable language_">self</span>.outfile.flush()</span><br><span class="line"></span><br><span class="line">                    <span class="comment"># 检查HTTPS证书</span></span><br><span class="line">                    <span class="keyword">if</span> <span class="keyword">not</span> <span class="variable language_">self</span>.options.no_cert_check:</span><br><span class="line">                        <span class="keyword">async</span> <span class="keyword">with</span> timeout(<span class="number">10.0</span>):</span><br><span class="line">                            <span class="keyword">await</span> <span class="variable language_">self</span>.check_https_alt_names(cur_domain)</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">try</span>:</span><br><span class="line">                        <span class="variable language_">self</span>.scan_count_local += <span class="number">1</span></span><br><span class="line">                        <span class="keyword">await</span> <span class="variable language_">self</span>.do_query(j, <span class="string">'lijiejie-test-not-existed.'</span> + cur_domain)</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">except</span> dns.resolver.NXDOMAIN <span class="keyword">as</span> e:</span><br><span class="line">                        <span class="keyword">if</span> <span class="variable language_">self</span>.queue.qsize() &lt; <span class="number">20000</span>:</span><br><span class="line">                            <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="variable language_">self</span>.next_subs:</span><br><span class="line">                                <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put((<span class="number">0</span>, _ + <span class="string">'.'</span> + sub))</span><br><span class="line">                        <span class="keyword">else</span>:</span><br><span class="line">                            <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put((<span class="number">1</span>, <span class="string">'{next_sub}.'</span> + sub))</span><br><span class="line">                    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                        <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">except</span> (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer) <span class="keyword">as</span> e:</span><br><span class="line">                <span class="keyword">pass</span></span><br><span class="line">            <span class="keyword">except</span> dns.resolver.NoNameservers <span class="keyword">as</span> e:</span><br><span class="line">                <span class="variable language_">self</span>.no_server_subs[sub] = <span class="variable language_">self</span>.no_server_subs.get(sub, <span class="number">0</span>) + <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> <span class="variable language_">self</span>.no_server_subs[sub] &lt;= <span class="number">3</span>:</span><br><span class="line">                    <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put((<span class="number">0</span>, sub))    <span class="comment"># Retry again</span></span><br><span class="line">            <span class="keyword">except</span> (dns.exception.Timeout, dns.resolver.LifetimeTimeout) <span class="keyword">as</span> e:</span><br><span class="line">                <span class="variable language_">self</span>.timeout_subs[sub] = <span class="variable language_">self</span>.timeout_subs.get(sub, <span class="number">0</span>) + <span class="number">1</span></span><br><span class="line">                <span class="keyword">if</span> <span class="variable language_">self</span>.timeout_subs[sub] &lt;= <span class="number">3</span>:</span><br><span class="line">                    <span class="keyword">await</span> <span class="variable language_">self</span>.queue.put((<span class="number">0</span>, sub))    <span class="comment"># Retry again</span></span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                <span class="keyword">if</span> <span class="built_in">str</span>(<span class="built_in">type</span>(e)).find(<span class="string">'asyncio.exceptions.TimeoutError'</span>) &lt; <span class="number">0</span>:</span><br><span class="line">                    <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">'errors.log'</span>, <span class="string">'a'</span>) <span class="keyword">as</span> errFile:</span><br><span class="line">                        errFile.write(<span class="string">'[%s] %s\n'</span> % (<span class="built_in">type</span>(e), <span class="built_in">str</span>(e)))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="keyword">def</span> <span class="title function_">async_run</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">await</span> <span class="variable language_">self</span>.load_sub_names()</span><br><span class="line">        tasks = [<span class="variable language_">self</span>.scan(i) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="variable language_">self</span>.options.threads)]</span><br><span class="line">        tasks.insert(<span class="number">0</span>, <span class="variable language_">self</span>.update_counter())</span><br><span class="line">        <span class="keyword">await</span> asyncio.gather(*tasks)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self</span>):</span><br><span class="line">        loop = asyncio.get_event_loop()</span><br><span class="line">        asyncio.set_event_loop(loop)</span><br><span class="line">        loop.run_until_complete(<span class="variable language_">self</span>.async_run())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">run_process</span>(<span class="params">*params</span>):</span><br><span class="line">    <span class="comment"># 信号处理器</span></span><br><span class="line">    signal.signal(signal.SIGINT, user_abort)</span><br><span class="line">    <span class="comment"># 调用SubNameBrute的run方法</span></span><br><span class="line">    s = SubNameBrute(*params)</span><br><span class="line">    s.run()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 根据option.process启动多个进程</span></span><br><span class="line"><span class="keyword">for</span> process_num <span class="keyword">in</span> <span class="built_in">range</span>(options.process):</span><br><span class="line">    p = multiprocessing.Process(</span><br><span class="line">        <span class="comment"># 调用run_process进行扫描</span></span><br><span class="line">        target=run_process,</span><br><span class="line">        args=(domain, options, process_num, dns_servers, next_subs,</span><br><span class="line">              scan_count, found_count, queue_size_array, tmp_dir)</span><br><span class="line">    )</span><br><span class="line">    all_process.append(p)</span><br><span class="line">    p.start()</span><br></pre></td></tr></tbody></table></figure>
+
+<p>总体的工作路径为：</p>
+<ul>
+<li><strong>加载子域名</strong>：从文件中读取子域名，识别通配符，放入任务队列</li>
+<li>扫描子域<ul>
+<li>多线程扫描子域</li>
+<li>对每个子域执行DNS查询，处理返回结果</li>
+<li>对子域名进行证书检查，CNAME解析等附加操作</li>
+</ul>
+</li>
+<li><strong>记录结果</strong></li>
+<li><strong>错误处理与重试</strong>：对于DNS查询失败的子域进行重试，最多三次</li>
+</ul>
+<p>这里有个证书检查和CNAME解析，还有一个称呼叫<strong>证书透明度</strong>主要原因是<strong>提高全面性</strong>。在<strong>SSL/TLS</strong>证书中的<code>subjectAltName</code>字段会暴露一些隐藏子域。<strong>CNAME</strong>是DNS中的一种记录类别，通常用于将一个域名指向另一个域名，也就是说CNAME可以为某个域名创建一个别名，因此可以去发现隐藏的域名，增加子域名查询的全面性。</p>
+<p><strong>对于通配符子域名的处理</strong>：讲这些子域存在一个集合中，避免重复爆破，根据查询CNAME和MX记录，挖掘更多的子域，并且进行递归查询。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8/" rel="tag"># 网络安全</a>
+          </div>
+
+        
+
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">squar3c</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">90k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">2:43</span>
+  </span>
+</div>
+  <div class="powered-by">
+    <!--由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动 -->
+  </div>
+
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("03/03/2025 10:00:00"); //此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒.";
+    }
+setInterval("createtime()",250);
+</script>
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: '32px',
+  left: '',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: false,
+  label: ' ',
+  autoMatchOsTheme: false
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+if (window.darkmode && !window.darkmode.isActivated()) {
+  window.darkmode.toggle();
+  var toggleButtons = document.getElementsByClassName("darkmode-toggle");
+  if (toggleButtons && toggleButtons.length > 0) {
+    for (i = 0; i < toggleButtons.length; i++) {
+      toggleButtons[i].classList.add("darkmode-toggle--white");
+    }
+  }
+}
+</script>
+
+</body>
+</html>
